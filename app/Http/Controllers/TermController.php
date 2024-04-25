@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Term;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TermController extends Controller
@@ -10,9 +11,11 @@ class TermController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view("terms.index");
+        /** @var User */
+        $user = $request->user();
+        return view("terms.index", ["terms" => $user->terms()]);
     }
 
     /**
