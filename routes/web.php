@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\TermController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
-    return view("welcome");
+    return redirect("/terms");
 });
+
+Route::resource("terms", TermController::class);
