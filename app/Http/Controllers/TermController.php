@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,7 +16,12 @@ class TermController extends Controller
     {
         /** @var User */
         $user = $request->user();
-        return view("terms.index", ["terms" => $user->terms()]);
+        $terms = Term::with("lang")
+            ->withCount("definitions")
+            ->whereBelongsTo($user)
+            ->paginate();
+
+        return view("terms.index", ["terms" => $terms]);
     }
 
     /**
@@ -23,7 +29,8 @@ class TermController extends Controller
      */
     public function create()
     {
-        return view("terms.create");
+        $langs = Lang::query()->orderBy("name", "asc")->get();
+        return view("terms.create", ["langs" => $langs]);
     }
 
     /**
