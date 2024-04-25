@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Expression;
+use App\Models\Term;
 use Illuminate\Http\Request;
 
-class ExpressionController extends Controller
+class TermController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ExpressionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Expression $expression)
+    public function show(Term $term)
     {
         //
     }
@@ -42,7 +42,7 @@ class ExpressionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Expression $expression)
+    public function edit(Term $term)
     {
         //
     }
@@ -50,7 +50,7 @@ class ExpressionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Expression $expression)
+    public function update(Request $request, Term $term)
     {
         //
     }
@@ -58,7 +58,7 @@ class ExpressionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Expression $expression)
+    public function destroy(Term $term)
     {
         //
     }

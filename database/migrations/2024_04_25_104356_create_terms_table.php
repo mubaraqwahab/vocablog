@@ -10,13 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("expressions", function (Blueprint $table) {
+        Schema::create("terms", function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string("expression");
+            $table->string("term");
             $table->foreignId("lang_id")->constrained();
             $table->foreignId("user_id")->constrained()->cascadeOnDelete();
-            $table->unique(["expression", "lang_id", "user_id"]);
+            $table->unique(["term", "lang_id", "user_id"]);
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists("expressions");
+        Schema::dropIfExists("terms");
     }
 };

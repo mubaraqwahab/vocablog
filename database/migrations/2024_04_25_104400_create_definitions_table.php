@@ -15,10 +15,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->string("definition");
             $table->string("comment");
-            $table
-                ->foreignId("expression_id")
-                ->constrained()
-                ->cascadeOnDelete();
+            $table->foreignId("term_id")->constrained()->cascadeOnDelete();
         });
     }
 
