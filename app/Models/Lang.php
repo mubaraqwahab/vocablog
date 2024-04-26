@@ -11,6 +11,8 @@ class Lang extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     public function terms(): HasMany
     {
         return $this->hasMany(Term::class);

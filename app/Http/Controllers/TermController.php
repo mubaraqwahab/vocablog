@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Definition;
+use App\Models\Example;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TermController extends Controller
 {
@@ -38,7 +41,40 @@ class TermController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            "term" => "required|max:255",
+            "lang" => "required",
+            "defs" => "required|array|min:1",
+            "defs.*.definition" => "required|max:255",
+            "defs.*.examples" => "required|array|min:1",
+            "defs.*.examples.*" => "required|max:255",
+            "defs.*.comment" => "max:255",
+        ]);
+
+        DB::transaction(function () use ($validated, $request) {
+            $term = new Term();
+            $term->term = $validated["term"];
+            $term->lang_id = $validated["lang"];
+            $term->user_id = $request->user()->id;
+            $term->save();
+
+            foreach ($validated["defs"] as $validatedDef) {
+                $def = new Definition();
+                $def->definition = $validatedDef["definition"];
+                $def->comment = $validatedDef["comment"];
+                $def->term_id = $term->id;
+                $def->save();
+
+                foreach ($validatedDef["examples"] as $validatedExample) {
+                    $example = new Example();
+                    $example->example = $validatedExample;
+                    $example->definition_id = $def->id;
+                    $example->save();
+                }
+            }
+        });
+
+        return redirect(route("terms.index"));
     }
 
     /**

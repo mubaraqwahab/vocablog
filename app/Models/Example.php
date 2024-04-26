@@ -10,6 +10,8 @@ class Example extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     public function definition(): BelongsTo
     {
         return $this->belongsTo(Definition::class);
