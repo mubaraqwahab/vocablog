@@ -20,7 +20,7 @@ class TermController extends Controller
     {
         /** @var User */
         $user = $request->user();
-        $terms = Term::with("lang")
+        $terms = Term::query()
             ->withCount("definitions")
             ->whereBelongsTo($user)
             ->paginate();
@@ -45,7 +45,6 @@ class TermController extends Controller
         $validated = $request->validate([
             "term" => "required|max:255",
             "lang" => "required",
-            "abc" => "required",
             "defs" => "required|array|min:1",
             "defs.*.definition" => "required|max:255",
             "defs.*.examples" => "required|array|min:1",
@@ -92,7 +91,9 @@ class TermController extends Controller
      */
     public function edit(Term $term)
     {
-        return view("terms.edit", ["term" => $term]);
+        $term->load("definitions.examples");
+        $langs = Lang::query()->orderBy("name", "asc")->get();
+        return view("terms.edit", ["term" => $term, "langs" => $langs]);
     }
 
     /**

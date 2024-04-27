@@ -37,7 +37,7 @@
       @php
         $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
       @endphp
-      <ul
+      <ol
         x-data="{
           defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
           newlyAdded: null, // could be 'definition' or 'example'
@@ -129,7 +129,7 @@
             </button>
           </li>
         </template>
-      </ul>
+      </ol>
     </fieldset>
     <button type="submit">Save term</button>
   </x-form>
