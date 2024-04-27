@@ -9,6 +9,7 @@ use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\ComponentAttributeBag;
 
 class TermController extends Controller
 {
@@ -44,6 +45,7 @@ class TermController extends Controller
         $validated = $request->validate([
             "term" => "required|max:255",
             "lang" => "required",
+            "abc" => "required",
             "defs" => "required|array|min:1",
             "defs.*.definition" => "required|max:255",
             "defs.*.examples" => "required|array|min:1",
