@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DefinitionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TermController;
 use Illuminate\Support\Facades\Route;
@@ -15,7 +16,13 @@ Route::middleware("auth")->group(function () {
         "destroy",
     ]);
 
-    Route::resource("terms", TermController::class)->middleware("verified");
+    Route::resource("terms", TermController::class)
+        ->except(["edit"])
+        ->middleware("verified");
+
+    Route::resource("definitions", DefinitionController::class)
+        ->only(["update", "destroy"])
+        ->middleware("verified");
 });
 
 require __DIR__ . "/auth.php";

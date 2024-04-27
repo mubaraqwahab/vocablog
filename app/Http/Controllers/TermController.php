@@ -47,7 +47,7 @@ class TermController extends Controller
             "lang" => "required",
             "defs" => "required|array|min:1",
             "defs.*.definition" => "required|max:255",
-            "defs.*.examples" => "required|array|min:1",
+            "defs.*.examples" => "required|array|min:1|max:5",
             "defs.*.examples.*" => "required|max:255",
             "defs.*.comment" => "max:255",
         ]);
@@ -83,6 +83,9 @@ class TermController extends Controller
      */
     public function show(Term $term)
     {
+        // TODO: authorize only the term owner
+
+        $term->load("definitions.examples");
         return view("terms.show", ["term" => $term]);
     }
 
@@ -91,9 +94,7 @@ class TermController extends Controller
      */
     public function edit(Term $term)
     {
-        $term->load("definitions.examples");
-        $langs = Lang::query()->orderBy("name", "asc")->get();
-        return view("terms.edit", ["term" => $term, "langs" => $langs]);
+        //
     }
 
     /**
@@ -109,6 +110,6 @@ class TermController extends Controller
      */
     public function destroy(Term $term)
     {
-        //
+        // TODO: authorize only the term owner
     }
 }
