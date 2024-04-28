@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Definition;
 use App\Models\Example;
+use App\Models\Term;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -50,9 +51,9 @@ class DefinitionController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Upsert the specified resource in storage.
      */
-    public function update(Request $request, Definition $definition)
+    public function upsert(Request $request, Term $term, Definition $definition)
     {
         // TODO: authorize only the def owner
 
@@ -63,9 +64,11 @@ class DefinitionController extends Controller
             "comment" => "max:255",
         ]);
 
-        DB::transaction(function () use ($validated, $definition) {
+        DB::transaction(function () use ($validated, $term, $definition) {
             $definition->definition = $validated["definition"];
             $definition->comment = $validated["comment"];
+            // This is necessary if the def is new (i.e. $definition.exists === false).
+            $definition->term_id = $term->id;
             $definition->save();
 
             // TODO: consider using a JSON array for the examples.

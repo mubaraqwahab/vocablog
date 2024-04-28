@@ -9,20 +9,22 @@ Route::get("/", function () {
     return redirect(route("terms.index"));
 });
 
-Route::middleware("auth")->group(function () {
-    Route::resource("profile", ProfileController::class)->only([
-        "edit",
-        "update",
+Route::resource("profile", ProfileController::class)
+    ->only(["edit", "update", "destroy"])
+    ->middleware("auth");
+
+Route::middleware(["auth", "verified"])->group(function () {
+    Route::resource("terms", TermController::class)->except(["edit", "update"]);
+
+    Route::put("terms/{term}/definitions/{definition?}", [
+        DefinitionController::class,
+        "upsert",
+    ])->name("definitions.upsert");
+
+    Route::delete("definitions/{definition}", [
+        DefinitionController::class,
         "destroy",
-    ]);
-
-    Route::resource("terms", TermController::class)
-        ->except(["edit"])
-        ->middleware("verified");
-
-    Route::resource("definitions", DefinitionController::class)
-        ->only(["update", "destroy"])
-        ->middleware("verified");
+    ])->name("definitions.destroy");
 });
 
 require __DIR__ . "/auth.php";

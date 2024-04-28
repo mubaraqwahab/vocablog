@@ -4,23 +4,38 @@
 
   @php
     $defs = $term->definitions->map(function ($def) {
-      $transformedDef = Arr::only($def->attributesToArray(), ['definition', 'comment']);
+      $transformedDef = Arr::only($def->attributesToArray(), ['id', 'definition', 'comment']);
       $transformedDef['examples'] = [];
       foreach ($def->examples as $k => $e) {
         $transformedDef['examples'][$k] = $e->example;
       }
       return $transformedDef;
     });
-
-    $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
   @endphp
 
-
-  <div x-data="{ defs: {{ Js::from($defs) }}, newlyAdded: null }">
+  <div
+    x-data="{
+      defs: {{ Js::from($defs) }},
+      // prevDefs may be a sparse array.
+      prevDefs: [],
+      newlyAddedThing: null,
+      updateDefRouteTemplate: {{
+        Js::from(
+          // -1 serves as a placeholder for the actual definition ID.
+          route('definitions.upsert', ['term' => $term, 'definition' => -1], absolute: false)
+        )
+      }},
+    }"
+  >
     <h2>Definitions</h2>
     <ol>
       <template x-for="(def, i) in defs">
-        <li x-data="{ readonly: newlyAdded !== 'definition' }">
+        {{-- NOTE:
+          1. Newly added defs won't have an ID yet, so their def.id would be undefined.
+          2. When def.id isn't undefined, it will be > 0 (because MySQL auto_increment
+             starts at 1 by default), so it's safe to do !!def.id and similar.
+        --}}
+        <li x-data="{ readonly: !!def.id }">
           <div x-show="readonly">
             <p x-text="def.definition"></p>
             <strong>Examples</strong>
@@ -33,30 +48,46 @@
               <strong>Comment</strong>
               <p x-text="def.comment"></p>
             </div>
-            <button type="button" x-on:click="readonly = false">Edit definition</button>
+            <button
+              type="button"
+              x-on:click="(() => {
+                readonly = false;
+                // Save a clone of the current def
+                prevDefs[i] = JSON.parse(JSON.stringify(def));
+              })()"
+            >
+              Edit definition
+            </button>
             <button type="button">Delete definition</button>
           </div>
 
 
           <x-form
             x-show="!readonly"
+            x-bind:action="updateDefRouteTemplate.replace(/-1$/, def.id || '')"
             method="PUT"
-            :action="`{{ route('definitions.update', ['definition' => '{}']) }}`.replace('{}', def.id)"
           >
             <div>
-              <label :for="`definition-${i}`">Definition</label>
-              <textarea name="definition" :id="`definition-${i}`" x-model="def.definition" required></textarea>
+              <label x-bind:for="`definition-${i}`">Definition</label>
+              <textarea
+                name="definition"
+                x-bind:id="`definition-${i}`"
+                x-model="def.definition"
+                required
+                maxlength="255"
+              ></textarea>
             </div>
             <ul>
               <template x-for="(_, j) in def.examples">
                 <li>
-                  <label :for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
+                  <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
                   <input
                     type="text"
-                    :id="`example-${i}-${j}`"
-                    :name="`examples[${j}]`"
+                    x-bind:id="`example-${i}-${j}`"
+                    x-bind:name="`examples[${j}]`"
                     x-model="def.examples[j]"
                     required
+                    maxlength="255"
                   />
                   <button
                     type="button"
@@ -70,7 +101,7 @@
                     x-show="j === def.examples.length - 1"
                     x-on:click="(() => {
                       def.examples.push('');
-                      newlyAdded = 'example';
+                      newlyAddedThing = 'example';
                     })"
                   >
                     Add another example
@@ -79,11 +110,31 @@
               </template>
             </ul>
             <div>
-              <label :for="`comment-${i}`">Comment</label>
-              <textarea name="comment" :id="`comment-${i}`" x-model="def.comment"></textarea>
+              <label x-bind:for="`comment-${i}`">Comment</label>
+              <textarea
+                name="comment"
+                x-bind:id="`comment-${i}`"
+                x-model="def.comment"
+                maxlength="255"
+              ></textarea>
             </div>
             <button type="submit">Save</button>
-            <button type="button" x-on:click="readonly = true">Cancel</button>
+            <button
+              type="button"
+              x-on:click="(() => {
+                readonly = true
+                if (def.id) {
+                  // Reset the def to what is was before editing.
+                  defs[i] = prevDefs[i];
+                  delete prevDefs[i];
+                } else {
+                  // Remove the new def.
+                  defs.splice(i, 1);
+                }
+              })()"
+            >
+              Cancel
+            </button>
           </x-form>
         </li>
       </template>
@@ -91,8 +142,8 @@
     <button
       type="button"
       x-on:click="(() => {
-        defs.push({{ Js::from($emptyDef) }});
-        newlyAdded = 'definition';
+        defs.push({ definition: '', examples: [''], comment: '' });
+        newlyAddedThing = 'definition';
       })"
     >
       Add definition
