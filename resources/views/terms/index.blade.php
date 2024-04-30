@@ -1,9 +1,9 @@
 <x-layout title="My vocabulary">
   <div class="container">
     <h1 class="text-3xl font-bold">My vocabulary</h1>
-    <a href="{{ route('terms.create') }}">New term</a>
 
     @if (count($terms))
+      <a href="{{ route('terms.create') }}">New term</a>
       <p>Showing {{ count($terms) }} out of {{ $terms->total() }} terms.</p>
       <ul>
         @foreach ($terms as $term)
@@ -17,7 +17,7 @@
         @endforeach
       </ul>
     @else
-      <p>No terms</p>
+      <p>You don't have any terms in your Vocablog. <a href="{{ route('terms.create') }}">Add a new term</a></p>
     @endif
   </div>
 </x-layout>
