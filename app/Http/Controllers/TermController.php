@@ -111,5 +111,7 @@ class TermController extends Controller
     public function destroy(Term $term)
     {
         // TODO: authorize only the term owner
+        $term->delete();
+        return redirect(route("terms.index"));
     }
 }

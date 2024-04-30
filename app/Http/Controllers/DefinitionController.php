@@ -92,6 +92,8 @@ class DefinitionController extends Controller
      */
     public function destroy(Definition $definition)
     {
-        //
+        // TODO: authorize only the def owner.
+        $definition->delete();
+        return redirect(route("terms.show", ["term" => $definition->term_id]));
     }
 }

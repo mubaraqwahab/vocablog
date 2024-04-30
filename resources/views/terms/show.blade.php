@@ -1,4 +1,5 @@
 <x-layout title="{{ $term->term }}">
+  <a href="{{ route('terms.index') }}">Back to terms</a>
   <h1>{{ $term->term }}</h1>
   <p>{{ $term->lang->name }}</p>
 
@@ -23,6 +24,11 @@
         Js::from(
           // -1 serves as a placeholder for the actual definition ID.
           route('definitions.upsert', ['term' => $term, 'definition' => -1], absolute: false)
+        )
+      }},
+      deleteDefRouteTemplate: {{
+        Js::from(
+          route('definitions.destroy', ['definition' => -1], absolute: false)
         )
       }},
     }"
@@ -50,15 +56,22 @@
             </div>
             <button
               type="button"
-              x-on:click="(() => {
+              x-on:click="
                 readonly = false;
                 // Save a clone of the current def
                 prevDefs[i] = JSON.parse(JSON.stringify(def));
-              })()"
+              "
             >
               Edit definition
             </button>
-            <button type="button">Delete definition</button>
+            <button type="button" x-on:click="$refs.deleteDefDialog.showModal()">Delete definition</button>
+            <dialog x-ref="deleteDefDialog">
+              <p>Are you sure you want to delete this definition?</p>
+              <x-form method="DELETE" x-bind:action="deleteDefRouteTemplate.replace(/-1$/, def.id || '')">
+                <button autofocus type="submit" formmethod="dialog">No, keep it</button>
+                <button type="submit">Yes, delete it</button>
+              </x-form>
+            </dialog>
           </div>
 
 
@@ -99,10 +112,10 @@
                   <button
                     type="button"
                     x-show="j === def.examples.length - 1"
-                    x-on:click="(() => {
+                    x-on:click="
                       def.examples.push('');
                       newlyAddedThing = 'example';
-                    })"
+                    "
                   >
                     Add another example
                   </button>
@@ -121,8 +134,8 @@
             <button type="submit">Save</button>
             <button
               type="button"
-              x-on:click="(() => {
-                readonly = true
+              x-on:click="
+                readonly = true;
                 if (def.id) {
                   // Reset the def to what is was before editing.
                   defs[i] = prevDefs[i];
@@ -131,7 +144,7 @@
                   // Remove the new def.
                   defs.splice(i, 1);
                 }
-              })()"
+              "
             >
               Cancel
             </button>
@@ -141,15 +154,24 @@
     </ol>
     <button
       type="button"
-      x-on:click="(() => {
+      x-on:click="
         defs.push({ definition: '', examples: [''], comment: '' });
         newlyAddedThing = 'definition';
-      })"
+      "
     >
       Add definition
     </button>
   </div>
 
+  <div x-data>
+    <button type="button" x-on:click="$refs.deleteTermDialog.showModal()">Delete term</button>
+    <dialog x-ref="deleteTermDialog">
+      <p>Are you sure you want to delete this term?</p>
+      <x-form method="DELETE" action="{{ route('terms.destroy', ['term' => $term], absolute: false) }}">
+        <button autofocus type="submit" formmethod="dialog">No, keep it</button>
+        <button type="submit">Yes, delete it</button>
+      </x-form>
+  </div>
+  </dialog>
 
-  <button type="button">Delete term</button>
 </x-layout>
