@@ -9,6 +9,7 @@ use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\ComponentAttributeBag;
 
 class TermController extends Controller
@@ -22,7 +23,7 @@ class TermController extends Controller
         $user = $request->user();
         $terms = Term::query()
             ->withCount("definitions")
-            ->whereBelongsTo($user)
+            ->whereBelongsTo($user, "owner")
             ->paginate();
 
         return view("terms.index", ["terms" => $terms]);
@@ -56,7 +57,7 @@ class TermController extends Controller
             $term = new Term();
             $term->term = $validated["term"];
             $term->lang_id = $validated["lang"];
-            $term->user_id = $request->user()->id;
+            $term->owner_id = $request->user()->id;
             $term->save();
 
             foreach ($validated["defs"] as $validatedDef) {
@@ -83,26 +84,10 @@ class TermController extends Controller
      */
     public function show(Term $term)
     {
-        // TODO: authorize only the term owner
+        Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $term->load("definitions.examples");
         return view("terms.show", ["term" => $term]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Term $term)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Term $term)
-    {
-        //
     }
 
     /**
@@ -110,7 +95,8 @@ class TermController extends Controller
      */
     public function destroy(Term $term)
     {
-        // TODO: authorize only the term owner
+        Gate::allowIf(fn(User $user) => $user->is($term->owner));
+
         $term->delete();
         return redirect(route("terms.index"));
     }

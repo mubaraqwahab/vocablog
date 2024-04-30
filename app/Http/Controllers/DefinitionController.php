@@ -5,57 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Definition;
 use App\Models\Example;
 use App\Models\Term;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class DefinitionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Definition $definition)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Definition $definition)
-    {
-        //
-    }
-
     /**
      * Upsert the specified resource in storage.
      */
     public function upsert(Request $request, Term $term, Definition $definition)
     {
-        // TODO: authorize only the def owner
+        Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $validated = $request->validate([
             "definition" => "required|max:255",
@@ -92,7 +54,8 @@ class DefinitionController extends Controller
      */
     public function destroy(Definition $definition)
     {
-        // TODO: authorize only the def owner.
+        Gate::allowIf(fn(User $user) => $user->is($definition->term->owner));
+
         $definition->delete();
         return redirect(route("terms.show", ["term" => $definition->term_id]));
     }

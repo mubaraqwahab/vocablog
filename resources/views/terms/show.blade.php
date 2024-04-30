@@ -168,7 +168,7 @@
     <dialog x-ref="deleteTermDialog">
       <p>Are you sure you want to delete this term?</p>
       <x-form method="DELETE" action="{{ route('terms.destroy', ['term' => $term], absolute: false) }}">
-        <button autofocus type="submit" formmethod="dialog">No, keep it</button>
+        <button type="submit" formmethod="dialog">No, keep it</button>
         <button type="submit">Yes, delete it</button>
       </x-form>
   </div>

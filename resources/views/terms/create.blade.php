@@ -47,17 +47,17 @@
           <li>
             <fieldset>
               <div>
-                <label :for="`definition-${i}`">Definition</label>
+                <label x-bind:for="`definition-${i}`">Definition</label>
                 <textarea
-                  :name="`defs[${i}][definition]`"
-                  :id="`definition-${i}`"
+                  x-bind:name="`defs[${i}][definition]`"
+                  x-bind:id="`definition-${i}`"
                   x-model="def.definition"
-                  x-effect="(() => {
+                  x-effect="
                     if (newlyAdded === 'definition' && i === defs.length - 1) {
                       $el.focus();
                       newlyAdded = null;
                     }
-                  })()"
+                  "
                   required
                 ></textarea>
               </div>
@@ -66,18 +66,18 @@
                 <ul>
                   <template x-for="(_, j) in def.examples">
                     <li>
-                      <label :for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
+                      <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
                       <input
                         type="text"
-                        :id="`example-${i}-${j}`"
-                        :name="`defs[${i}][examples][${j}]`"
+                        x-bind:id="`example-${i}-${j}`"
+                        x-bind:name="`defs[${i}][examples][${j}]`"
                         x-model="def.examples[j]"
-                        x-effect="(() => {
+                        x-effect="
                           if (newlyAdded === 'example' && j === def.examples.length - 1) {
                             $el.focus();
                             newlyAdded = null;
                           }
-                        })()"
+                        "
                         required
                       />
                       <button
@@ -90,10 +90,10 @@
                       <button
                         type="button"
                         x-show="j === def.examples.length - 1"
-                        x-on:click="(() => {
+                        x-on:click="
                           def.examples.push('');
                           newlyAdded = 'example';
-                        })()"
+                        "
                       >
                         Add another example
                       </button>
@@ -102,10 +102,10 @@
                 </ul>
               </fieldset>
               <div>
-                <label :for="`comment-${i}`">Comment</label>
+                <label x-bind:for="`comment-${i}`">Comment</label>
                 <textarea
-                  :name="`defs[${i}][comment]`"
-                  :id="`comment-${i}`"
+                  x-bind:name="`defs[${i}][comment]`"
+                  x-bind:id="`comment-${i}`"
                   x-model="def.comment"
                 ></textarea>
               </div>
@@ -120,10 +120,10 @@
             <button
               type="button"
               x-show="i === defs.length - 1"
-              x-on:click="(() => {
+              x-on:click="
                 defs.push({{ Js::from($emptyDef) }});
                 newlyAdded = 'definition';
-              })"
+              "
             >
               Add another definition
             </button>

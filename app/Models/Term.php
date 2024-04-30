@@ -18,7 +18,7 @@ class Term extends Model
      */
     protected $with = ["lang"];
 
-    public function user(): BelongsTo
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
