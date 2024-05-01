@@ -10,7 +10,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\View\ComponentAttributeBag;
 
 class TermController extends Controller
 {
@@ -86,6 +85,51 @@ class TermController extends Controller
 
         $term->load("definitions.examples");
         return view("terms.show", ["term" => $term]);
+    }
+
+    public function edit(Term $term)
+    {
+        Gate::allowIf(fn(User $user) => $user->is($term->owner));
+
+        $term->load("definitions.examples");
+        return view("terms.edit", ["term" => $term]);
+    }
+
+    public function update(Request $request, Term $term)
+    {
+        Gate::allowIf(fn(User $user) => $user->is($term->owner));
+
+        $validated = $request->validate([
+            "defs" => "required|array|min:1",
+            "defs.*.definition" => "required|max:255",
+            "defs.*.examples" => "required|array|min:1|max:5",
+            "defs.*.examples.*" => "required|max:255",
+            "defs.*.comment" => "max:255",
+        ]);
+
+        DB::transaction(function () use ($validated, $term) {
+            // TODO: consider using a JSON array for the defs.
+            Definition::query()
+                ->where("term_id", $term->id)
+                ->delete();
+
+            foreach ($validated["defs"] as $validatedDef) {
+                $def = new Definition();
+                $def->definition = $validatedDef["definition"];
+                $def->comment = $validatedDef["comment"];
+                $def->term_id = $term->id;
+                $def->save();
+
+                foreach ($validatedDef["examples"] as $validatedExample) {
+                    $example = new Example();
+                    $example->example = $validatedExample;
+                    $example->definition_id = $def->id;
+                    $example->save();
+                }
+            }
+        });
+
+        return redirect(route("terms.show"));
     }
 
     /**
