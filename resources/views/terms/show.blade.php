@@ -42,113 +42,133 @@
              starts at 1 by default), so it's safe to do !!def.id and similar.
         --}}
         <li x-data="{ readonly: !!def.id }">
-          <div x-show="readonly">
-            <p x-text="def.definition"></p>
-            <strong>Examples</strong>
-            <ul>
-              <template x-for="example in def.examples">
-                <li x-text="example"></li>
-              </template>
-            </ul>
-            <div x-show="def.comment">
-              <strong>Comment</strong>
-              <p x-text="def.comment"></p>
+          {{-- <template x-if="readonly"> --}}
+            <div x-show="readonly">
+              <p x-text="def.definition"></p>
+              <strong>Examples</strong>
+              <ul>
+                <template x-for="example in def.examples">
+                  <li x-text="example"></li>
+                </template>
+              </ul>
+              <div x-show="def.comment">
+                <strong>Comment</strong>
+                <p x-text="def.comment"></p>
+              </div>
+              <button
+                type="button"
+                x-bind:id="`edit-${i}`"
+                x-on:click="
+                  readonly = false;
+                  // Save a clone of the current def
+                  prevDefs[i] = JSON.parse(JSON.stringify(def));
+                "
+                x-init="
+                  $watch('readonly', (readonly) => {
+                    console.log({ $el, readonly })
+                    if (readonly) {
+                      $nextTick(() => $el.focus());
+                    }
+                  })
+                "
+              >
+                Edit definition
+              </button>
+              <button type="button" x-on:click="$refs.deleteDefDialog.showModal()">Delete definition</button>
+              <dialog x-ref="deleteDefDialog">
+                <p>Are you sure you want to delete this definition?</p>
+                <x-form method="DELETE" x-bind:action="deleteDefRouteTemplate.replace(/-1$/, def.id || '')">
+                  <button autofocus type="submit" formmethod="dialog">No, keep it</button>
+                  <button type="submit">Yes, delete it</button>
+                </x-form>
+              </dialog>
             </div>
-            <button
-              type="button"
-              x-on:click="
-                readonly = false;
-                // Save a clone of the current def
-                prevDefs[i] = JSON.parse(JSON.stringify(def));
-              "
-            >
-              Edit definition
-            </button>
-            <button type="button" x-on:click="$refs.deleteDefDialog.showModal()">Delete definition</button>
-            <dialog x-ref="deleteDefDialog">
-              <p>Are you sure you want to delete this definition?</p>
-              <x-form method="DELETE" x-bind:action="deleteDefRouteTemplate.replace(/-1$/, def.id || '')">
-                <button autofocus type="submit" formmethod="dialog">No, keep it</button>
-                <button type="submit">Yes, delete it</button>
-              </x-form>
-            </dialog>
-          </div>
+          {{-- </template> --}}
 
 
-          <x-form
-            x-show="!readonly"
-            x-bind:action="updateDefRouteTemplate.replace(/-1$/, def.id || '')"
-            method="PUT"
-          >
-            <div>
-              <label x-bind:for="`definition-${i}`">Definition</label>
-              <textarea
-                name="definition"
-                x-bind:id="`definition-${i}`"
-                x-model="def.definition"
-                required
-                maxlength="255"
-              ></textarea>
-            </div>
-            <ul>
-              <template x-for="(_, j) in def.examples">
-                <li>
-                  <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
-                  <input
-                    type="text"
-                    x-bind:id="`example-${i}-${j}`"
-                    x-bind:name="`examples[${j}]`"
-                    x-model="def.examples[j]"
-                    required
-                    maxlength="255"
-                  />
-                  <button
-                    type="button"
-                    x-show="def.examples.length > 1"
-                    x-on:click="def.examples.splice(j, 1)"
-                  >
-                    Remove this example
-                  </button>
-                  <button
-                    type="button"
-                    x-show="j === def.examples.length - 1"
-                    x-on:click="
-                      def.examples.push('');
-                      newlyAddedThing = 'example';
-                    "
-                  >
-                    Add another example
-                  </button>
-                </li>
-              </template>
-            </ul>
-            <div>
-              <label x-bind:for="`comment-${i}`">Comment</label>
-              <textarea
-                name="comment"
-                x-bind:id="`comment-${i}`"
-                x-model="def.comment"
-                maxlength="255"
-              ></textarea>
-            </div>
-            <button type="submit">Save</button>
-            <button
-              type="button"
-              x-on:click="
-                readonly = true;
-                if (def.id) {
-                  // Reset the def to what is was before editing.
-                  defs[i] = prevDefs[i];
-                  delete prevDefs[i];
-                } else {
-                  // Remove the new def.
-                  defs.splice(i, 1);
-                }
-              "
+          {{-- <template x-if="!readonly"> --}}
+            <x-form x-show="!readonly"
+              x-bind:action="updateDefRouteTemplate.replace(/-1$/, def.id || '')"
+              method="PUT"
             >
-              Cancel
-            </button>
-          </x-form>
+              <div>
+                <label x-bind:for="`definition-${i}`">Definition</label>
+                <textarea
+                  name="definition"
+                  x-bind:id="`definition-${i}`"
+                  x-model="def.definition"
+                  x-init="
+                    $watch('readonly', (readonly) => {
+                      console.log({ $el, readonly })
+                      if (!readonly) {
+                        $nextTick(() => $el.focus());
+                      }
+                    });
+                  "
+                  required
+                  maxlength="255"
+                ></textarea>
+              </div>
+              <ul>
+                <template x-for="(_, j) in def.examples">
+                  <li>
+                    <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
+                    <input
+                      type="text"
+                      x-bind:id="`example-${i}-${j}`"
+                      x-bind:name="`examples[${j}]`"
+                      x-model="def.examples[j]"
+                      required
+                      maxlength="255"
+                    />
+                    <button
+                      type="button"
+                      x-show="def.examples.length > 1"
+                      x-on:click="def.examples.splice(j, 1)"
+                    >
+                      Remove this example
+                    </button>
+                    <button
+                      type="button"
+                      x-show="j === def.examples.length - 1"
+                      x-on:click="
+                        def.examples.push('');
+                        newlyAddedThing = 'example';
+                      "
+                    >
+                      Add another example
+                    </button>
+                  </li>
+                </template>
+              </ul>
+              <div>
+                <label x-bind:for="`comment-${i}`">Comment</label>
+                <textarea
+                  name="comment"
+                  x-bind:id="`comment-${i}`"
+                  x-model="def.comment"
+                  maxlength="255"
+                ></textarea>
+              </div>
+              <button type="submit">Save</button>
+              <button
+                type="button"
+                x-on:click="
+                  readonly = true;
+                  if (def.id) {
+                    // Reset the def to what is was before editing.
+                    defs[i] = prevDefs[i];
+                    delete prevDefs[i];
+                  } else {
+                    // Remove the new def.
+                    defs.splice(i, 1);
+                  }
+                "
+              >
+                Cancel
+              </button>
+            </x-form>
+          {{-- </template> --}}
         </li>
       </template>
     </ol>

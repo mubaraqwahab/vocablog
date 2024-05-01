@@ -19,11 +19,9 @@ class TermController extends Controller
      */
     public function index(Request $request)
     {
-        /** @var User */
-        $user = $request->user();
         $terms = Term::query()
             ->withCount("definitions")
-            ->whereBelongsTo($user, "owner")
+            ->whereBelongsTo($request->user(), "owner")
             ->paginate();
 
         return view("terms.index", ["terms" => $terms]);

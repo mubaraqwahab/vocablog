@@ -40,7 +40,7 @@
       <ol
         x-data="{
           defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
-          newlyAdded: null, // could be 'definition' or 'example'
+          newlyAddedThing: null, // could be 'definition' or 'example'
         }"
       >
         <template x-for="(def, i) in defs">
@@ -53,9 +53,9 @@
                   x-bind:id="`definition-${i}`"
                   x-model="def.definition"
                   x-effect="
-                    if (newlyAdded === 'definition' && i === defs.length - 1) {
+                    if (newlyAddedThing === 'definition' && i === defs.length - 1) {
                       $el.focus();
-                      newlyAdded = null;
+                      newlyAddedThing = null;
                     }
                   "
                   required
@@ -73,9 +73,9 @@
                         x-bind:name="`defs[${i}][examples][${j}]`"
                         x-model="def.examples[j]"
                         x-effect="
-                          if (newlyAdded === 'example' && j === def.examples.length - 1) {
+                          if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
                             $el.focus();
-                            newlyAdded = null;
+                            newlyAddedThing = null;
                           }
                         "
                         required
@@ -92,7 +92,7 @@
                         x-show="j === def.examples.length - 1"
                         x-on:click="
                           def.examples.push('');
-                          newlyAdded = 'example';
+                          newlyAddedThing = 'example';
                         "
                       >
                         Add another example
@@ -122,7 +122,7 @@
               x-show="i === defs.length - 1"
               x-on:click="
                 defs.push({{ Js::from($emptyDef) }});
-                newlyAdded = 'definition';
+                newlyAddedThing = 'definition';
               "
             >
               Add another definition
