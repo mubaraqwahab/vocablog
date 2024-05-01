@@ -33,12 +33,12 @@
             x-bind:id="`example-{{ $id }}-${j}`"
             x-bind:name="`examples[${j}]`"
             x-model="def.examples[j]"
-            x-init="
+            x-init="() => {
               // NOTE: Only a newly added example will be empty during initialization.
               if ((j === def.examples.length - 1) && (def.examples[j] === '')) {
                 $el.focus()
               }
-            "
+            }"
             required
             maxlength="255"
           />

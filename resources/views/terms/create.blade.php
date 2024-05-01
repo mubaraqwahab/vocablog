@@ -53,12 +53,12 @@
                   x-bind:id="`definition-${i}`"
                   x-model="def.definition"
                   x-on:keydown.enter.prevent
-                  x-init="
+                  x-init="() => {
                     if (newlyAddedThing === 'definition' && i === defs.length - 1) {
                       $el.focus();
                       newlyAddedThing = null;
                     }
-                  "
+                  }"
                   required
                 ></textarea>
               </div>
@@ -73,12 +73,12 @@
                         x-bind:id="`example-${i}-${j}`"
                         x-bind:name="`defs[${i}][examples][${j}]`"
                         x-model="def.examples[j]"
-                        x-init="
+                        x-init="() => {
                           if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
                             $el.focus();
                             newlyAddedThing = null;
                           }
-                        "
+                        }"
                         required
                       />
                       <button
@@ -91,10 +91,10 @@
                       <button
                         type="button"
                         x-show="j === def.examples.length - 1"
-                        x-on:click="
+                        x-on:click="() => {
                           def.examples.push('');
                           newlyAddedThing = 'example';
-                        "
+                        }"
                       >
                         Add another example
                       </button>
