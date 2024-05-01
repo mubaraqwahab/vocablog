@@ -52,7 +52,8 @@
                   x-bind:name="`defs[${i}][definition]`"
                   x-bind:id="`definition-${i}`"
                   x-model="def.definition"
-                  x-effect="
+                  x-on:keydown.enter.prevent
+                  x-init="
                     if (newlyAddedThing === 'definition' && i === defs.length - 1) {
                       $el.focus();
                       newlyAddedThing = null;
@@ -72,7 +73,7 @@
                         x-bind:id="`example-${i}-${j}`"
                         x-bind:name="`defs[${i}][examples][${j}]`"
                         x-model="def.examples[j]"
-                        x-effect="
+                        x-init="
                           if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
                             $el.focus();
                             newlyAddedThing = null;
@@ -107,6 +108,7 @@
                   x-bind:name="`defs[${i}][comment]`"
                   x-bind:id="`comment-${i}`"
                   x-model="def.comment"
+                  x-on:keydown.enter.prevent
                 ></textarea>
               </div>
             </fieldset>
