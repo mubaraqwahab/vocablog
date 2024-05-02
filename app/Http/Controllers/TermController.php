@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class TermController extends Controller
 {
@@ -41,13 +42,13 @@ class TermController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "term" => "required|max:255",
-            "lang" => "required",
-            "defs" => "required|array|min:1",
-            "defs.*.definition" => "required|max:255",
-            "defs.*.examples" => "required|array|min:1|max:5",
-            "defs.*.examples.*" => "required|max:255",
-            "defs.*.comment" => "max:255",
+            "term" => ["required", "max:255", "unique:terms"],
+            "lang" => ["required", "exists:langs,id"],
+            "defs" => ["required", "array", "min:1"],
+            "defs.*.definition" => ["required", "max:255"],
+            "defs.*.examples" => ["required", "array", "min:1", "max:5"],
+            "defs.*.examples.*" => ["required", "max:255"],
+            "defs.*.comment" => ["max:255"],
         ]);
 
         DB::transaction(function () use ($validated, $request) {
@@ -92,7 +93,8 @@ class TermController extends Controller
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $term->load("definitions.examples");
-        return view("terms.edit", ["term" => $term]);
+        $langs = Lang::query()->orderBy("name", "asc")->get();
+        return view("terms.edit", ["term" => $term, "langs" => $langs]);
     }
 
     public function update(Request $request, Term $term)
@@ -100,14 +102,24 @@ class TermController extends Controller
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $validated = $request->validate([
-            "defs" => "required|array|min:1",
-            "defs.*.definition" => "required|max:255",
-            "defs.*.examples" => "required|array|min:1|max:5",
-            "defs.*.examples.*" => "required|max:255",
-            "defs.*.comment" => "max:255",
+            "term" => [
+                "required",
+                "max:255",
+                Rule::unique("terms")->ignore($term->id),
+            ],
+            "lang" => ["required", "exists:langs,id"],
+            "defs" => ["required", "array", "min:1"],
+            "defs.*.definition" => ["required", "max:255"],
+            "defs.*.examples" => ["required", "array", "min:1", "max:5"],
+            "defs.*.examples.*" => ["required", "max:255"],
+            "defs.*.comment" => ["max:255"],
         ]);
 
         DB::transaction(function () use ($validated, $term) {
+            $term->term = $validated["term"];
+            $term->lang_id = $validated["lang"];
+            $term->save();
+
             // TODO: consider using a JSON array for the defs.
             Definition::query()
                 ->where("term_id", $term->id)
@@ -129,7 +141,7 @@ class TermController extends Controller
             }
         });
 
-        return redirect(route("terms.show"));
+        return redirect(route("terms.show", ["term" => $term]));
     }
 
     /**

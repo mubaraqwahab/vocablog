@@ -1,5 +1,9 @@
-<x-layout title="Edit term">
-  <h1>New term</h1>
+<x-layout title='Edit term'>
+  <h1>Edit term</h1>
+
+  @php
+    dump($term, $term->lang->name);
+  @endphp
 
   @if ($errors->any())
     <div>
@@ -12,10 +16,10 @@
     </div>
   @endif
 
-  <x-form method="POST" action="{{ route('terms.store') }}">
+  <x-form method="PUT" action="{{ route('terms.update', ['term' => $term]) }}">
     <div>
       <label for="term">Term</label>
-      <input type="text" id="term" name="term" value="{{ old('term') }}" required />
+      <input type="text" id="term" name="term" value="{{ old('term') ?? $term->term }}" required />
     </div>
 
     <div>
@@ -24,7 +28,7 @@
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
-            @if ($lang->id === (int) old('lang')) selected @endif
+            @if ($lang->id === (int) (old('lang') ?? $term->lang_id)) selected @endif
           >
             {{ $lang->name }}
           </option>
@@ -36,10 +40,19 @@
       <legend>Definitions</legend>
       @php
         $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
+        $defs = $term->definitions->map(function ($def) {
+          return [
+            'definition' => $def->definition,
+            'comment' => $def->comment,
+            'examples' => $def->examples->map(function ($ex) {
+              return $ex->example;
+            }),
+          ];
+        });
       @endphp
       <ol
         x-data="{
-          defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
+          defs: {{ Js::from(old('defs') ?? $defs) }},
           newlyAddedThing: null, // could be 'definition' or 'example'
         }"
       >
