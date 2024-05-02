@@ -1,10 +1,6 @@
 <x-layout title='Edit term'>
   <h1>Edit term</h1>
 
-  @php
-    dump($term, $term->lang->name);
-  @endphp
-
   @if ($errors->any())
     <div>
       <strong>Errors</strong>

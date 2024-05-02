@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .PageHeading {
+    @apply text-3xl font-bold mb-4 text-gray-900;
+  }
+}

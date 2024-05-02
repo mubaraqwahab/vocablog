@@ -105,6 +105,7 @@ class TermController extends Controller
             "term" => [
                 "required",
                 "max:255",
+                // TODO: terms+lang combination should be unique
                 Rule::unique("terms")->ignore($term->id),
             ],
             "lang" => ["required", "exists:langs,id"],
