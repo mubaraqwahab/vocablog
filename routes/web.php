@@ -8,9 +8,21 @@ Route::get("/", function () {
     return redirect(route("terms.index"));
 });
 
-Route::resource("profile", ProfileController::class)
-    ->only(["edit", "update", "destroy"])
-    ->middleware("auth");
+Route::view("dashboard", "dashboard")->name("dashboard");
+
+Route::view("welcome", "welcome")->name("welcome");
+
+Route::middleware("auth")->group(function () {
+    Route::get("profile", [ProfileController::class, "edit"])->name(
+        "profile.edit"
+    );
+    Route::put("profile", [ProfileController::class, "update"])->name(
+        "profile.update"
+    );
+    Route::delete("profile", [ProfileController::class, "destroy"])->name(
+        "profile.destroy"
+    );
+});
 
 Route::resource("terms", TermController::class)->middleware([
     "auth",
