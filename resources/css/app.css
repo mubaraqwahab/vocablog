@@ -2,8 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :focus-visible {
+    @apply !outline-black !outline-2 !outline-offset-0 outline;
+  }
+}
+
 @layer components {
   .PageHeading {
     @apply text-3xl font-bold mb-4 text-gray-900;
+  }
+
+  .Button {
+    @apply underline inline-block;
   }
 }
