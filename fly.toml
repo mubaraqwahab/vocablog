@@ -24,6 +24,7 @@ console_command = 'php /var/www/html/artisan tinker'
   LOG_LEVEL = 'info'
   LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
   DB_CONNECTION = 'pgsql'
+  MAIL_MAILER = 'postmark'
 
 [http_service]
   internal_port = 8080
