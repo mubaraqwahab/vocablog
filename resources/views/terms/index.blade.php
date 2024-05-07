@@ -18,6 +18,9 @@
       @endforeach
     </ul>
   @else
-    <p>You don't have any terms in your Vocablog. <a href="{{ rroute('terms.create') }}">Add a new term</a></p>
+    <p>
+      You don't have any terms in your Vocablog.
+      <a href="{{ rroute('terms.create') }}" class="underline">Add a new term</a>
+    </p>
   @endif
 </x-layout>
