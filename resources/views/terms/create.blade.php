@@ -67,7 +67,7 @@
             <fieldset class="pl-4">
               <legend class="mb-3 -ml-4">
                 <strong class="font-bold">Examples</strong>
-                <p>You can add up to 5 examples.</p>
+                <p>You can add up to 3 examples.</p>
               </legend>
 
               <ul class="list-disc">
@@ -104,7 +104,7 @@
                 </template>
               </ul>
 
-              <template x-if="def.examples.length < 5">
+              <template x-if="def.examples.length < 3">
                 <button
                   type="button"
                   x-on:click="() => {

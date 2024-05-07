@@ -99,7 +99,7 @@
                     </button>
                     <button
                       type="button"
-                      x-show="j === def.examples.length - 1"
+                      x-show="j === def.examples.length - 1 && def.examples.length < 3"
                       x-on:click="() => {
                         def.examples.push('');
                         newlyAddedThing = 'example';

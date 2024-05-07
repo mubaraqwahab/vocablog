@@ -46,7 +46,7 @@ class TermController extends Controller
             "lang" => ["required", "exists:langs,id"],
             "defs" => ["required", "array", "min:1"],
             "defs.*.definition" => ["required", "max:255"],
-            "defs.*.examples" => ["required", "array", "min:1", "max:5"],
+            "defs.*.examples" => ["required", "array", "min:1", "max:3"],
             "defs.*.examples.*" => ["required", "max:255"],
             "defs.*.comment" => ["max:255"],
         ]);
@@ -111,7 +111,7 @@ class TermController extends Controller
             "lang" => ["required", "exists:langs,id"],
             "defs" => ["required", "array", "min:1"],
             "defs.*.definition" => ["required", "max:255"],
-            "defs.*.examples" => ["required", "array", "min:1", "max:5"],
+            "defs.*.examples" => ["required", "array", "min:1", "max:3"],
             "defs.*.examples.*" => ["required", "max:255"],
             "defs.*.comment" => ["max:255"],
         ]);
