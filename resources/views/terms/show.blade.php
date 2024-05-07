@@ -8,12 +8,14 @@
     @foreach ($term->definitions as $def)
       <li class="py-3 list-decimal">
         <p>{{ $def->definition }}</p>
-        <strong class="inline-block mt-2">Examples</strong>
-        <ul class="ml-8 italic list-disc">
-          @foreach ($def->examples as $e)
-            <li>{{ $e->example }}</li>
-          @endforeach
-        </ul>
+        @if (count($def->examples))
+          <strong class="inline-block mt-2">Examples</strong>
+          <ul class="ml-8 italic list-disc">
+            @foreach ($def->examples as $e)
+              <li>{{ $e->example }}</li>
+            @endforeach
+          </ul>
+        @endif
         @if ($def->comment)
           <strong class="inline-block mt-2">Comment</strong>
           <p>{{ $def->comment }}</p>

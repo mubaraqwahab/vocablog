@@ -33,10 +33,10 @@
       </select>
     </div>
 
-    <fieldset>
+    <fieldset class="mb-3">
       <legend class="font-bold text-lg mb-3">Definitions</legend>
       @php
-        $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
+        $emptyDef = ['definition' => '', 'examples' => [], 'comment' => ''];
       @endphp
       <ol
         class="ml-4 list-decimal"
@@ -64,13 +64,13 @@
               ></textarea>
             </div>
 
-            <fieldset class="pl-4">
-              <legend class="mb-3 -ml-4">
+            <fieldset>
+              <legend class="mb-3">
                 <strong class="font-bold">Examples</strong>
                 <p>You can add up to 3 examples.</p>
               </legend>
 
-              <ul class="list-disc">
+              <ul class="list-disc pl-4">
                 <template x-for="(_, j) in def.examples">
                   <li>
                     <div class="grid grid-cols-[1fr_auto_auto] gap-1">
@@ -90,7 +90,6 @@
                           required
                         />
                       </div>
-                      <template x-if="def.examples.length > 1">
                         <button
                           type="button"
                           x-on:click="def.examples.splice(j, 1)"
@@ -98,7 +97,6 @@
                         >
                           Delete example
                         </button>
-                      </template>
                     </div>
                   </li>
                 </template>
@@ -111,10 +109,9 @@
                     def.examples.push('');
                     newlyAddedThing = 'example';
                   }"
+                  x-text="def.examples.length === 0 ? 'Add an example' : 'Add another example'"
                   class="Button mb-5"
-                >
-                  Add another example
-                </button>
+                ></button>
               </template>
             </fieldset>
 
@@ -137,22 +134,21 @@
                 Delete definition
               </button>
             </template>
-            <template x-if="i === defs.length - 1">
-              <button
-                type="button"
-                x-on:click="() => {
-                  defs.push({{ Js::from($emptyDef) }});
-                  newlyAddedThing = 'definition';
-                }"
-                class="Button"
-              >
-                Add another definition
-              </button>
-            </template>
           </li>
         </template>
       </ol>
+      <button
+        type="button"
+        x-on:click="() => {
+          defs.push({{ Js::from($emptyDef) }});
+          newlyAddedThing = 'definition';
+        }"
+        class="Button"
+      >
+        Add another definition
+      </button>
     </fieldset>
+
     <button type="submit" class="Button">Save term</button>
   </x-form>
 </x-layout>

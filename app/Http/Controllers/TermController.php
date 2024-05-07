@@ -46,7 +46,7 @@ class TermController extends Controller
             "lang" => ["required", "exists:langs,id"],
             "defs" => ["required", "array", "min:1"],
             "defs.*.definition" => ["required", "max:255"],
-            "defs.*.examples" => ["required", "array", "min:1", "max:3"],
+            "defs.*.examples" => ["array", "max:3"],
             "defs.*.examples.*" => ["required", "max:255"],
             "defs.*.comment" => ["max:255"],
         ]);
@@ -65,6 +65,7 @@ class TermController extends Controller
                 $def->term_id = $term->id;
                 $def->save();
 
+                $validatedDef["examples"] ??= [];
                 foreach ($validatedDef["examples"] as $validatedExample) {
                     $example = new Example();
                     $example->example = $validatedExample;
@@ -111,7 +112,7 @@ class TermController extends Controller
             "lang" => ["required", "exists:langs,id"],
             "defs" => ["required", "array", "min:1"],
             "defs.*.definition" => ["required", "max:255"],
-            "defs.*.examples" => ["required", "array", "min:1", "max:3"],
+            "defs.*.examples" => ["array", "max:3"],
             "defs.*.examples.*" => ["required", "max:255"],
             "defs.*.comment" => ["max:255"],
         ]);
@@ -133,6 +134,7 @@ class TermController extends Controller
                 $def->term_id = $term->id;
                 $def->save();
 
+                $validatedDef["examples"] ??= [];
                 foreach ($validatedDef["examples"] as $validatedExample) {
                     $example = new Example();
                     $example->example = $validatedExample;
