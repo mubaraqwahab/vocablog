@@ -1,5 +1,5 @@
 <x-layout title="New term">
-  <a href="{{ route('terms.index') }}" class="underline inline-block mb-3">Back to terms</a>
+  <a href="{{ rroute('terms.index') }}" class="underline inline-block mb-3">Back to terms</a>
   <h1 class="PageHeading">New term</h1>
 
   @if ($errors->any())
@@ -13,7 +13,7 @@
     </div>
   @endif
 
-  <x-form method="POST" action="{{ route('terms.store') }}">
+  <x-form method="POST" action="{{ rroute('terms.store') }}">
     <div class="flex flex-col gap-1 mb-5 md:w-72">
       <label for="term">Term</label>
       <input type="text" id="term" name="term" value="{{ old('term') }}" required />

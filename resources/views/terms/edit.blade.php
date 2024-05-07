@@ -1,5 +1,5 @@
 <x-layout title='Edit term'>
-  <a href="{{ route('terms.index') }}" class="underline inline-block mb-3">Back to terms</a>
+  <a href="{{ rroute('terms.show', ['term' => $term]) }}" class="underline inline-block mb-3">Back to term</a>
   <h1>Edit term</h1>
 
   @if ($errors->any())
@@ -13,7 +13,7 @@
     </div>
   @endif
 
-  <x-form method="PUT" action="{{ route('terms.update', ['term' => $term]) }}">
+  <x-form method="PUT" action="{{ rroute('terms.update', ['term' => $term]) }}">
     <div>
       <label for="term">Term</label>
       <input type="text" id="term" name="term" value="{{ old('term') ?? $term->term }}" required />

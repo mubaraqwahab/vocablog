@@ -10,7 +10,7 @@
   {{ $attributes }}
 >
   <x-form
-    action="{{ route('definitions.upsert', ['term' => $termId, 'definition' => $id ?: null]) }}"
+    action="{{ rroute('definitions.upsert', ['term' => $termId, 'definition' => $id ?: null]) }}"
     method="PUT"
   >
     <div>

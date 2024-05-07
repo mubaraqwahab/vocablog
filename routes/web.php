@@ -5,7 +5,7 @@ use App\Http\Controllers\TermController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/", function () {
-    return redirect(route("terms.index"));
+    return redirect(rroute("terms.index"));
 });
 
 Route::view("dashboard", "dashboard")->name("dashboard");

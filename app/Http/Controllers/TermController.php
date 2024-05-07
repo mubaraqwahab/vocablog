@@ -74,7 +74,7 @@ class TermController extends Controller
             }
         });
 
-        return redirect(route("terms.index"));
+        return redirect(rroute("terms.index"));
     }
 
     /**
@@ -142,7 +142,7 @@ class TermController extends Controller
             }
         });
 
-        return redirect(route("terms.show", ["term" => $term]));
+        return redirect(rroute("terms.show", ["term" => $term]));
     }
 
     /**
@@ -153,6 +153,6 @@ class TermController extends Controller
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $term->delete();
-        return redirect(route("terms.index"));
+        return redirect(rroute("terms.index"));
     }
 }
