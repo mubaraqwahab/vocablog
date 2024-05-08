@@ -16,10 +16,10 @@
             <div class="absolute top-full right-0 w-40 border p-2 bg-white mt-2 shadow">
               <ul>
                 <li>
-                  <a href="{{ route('profile.edit') }}" class="block px-3 py-2 underline">Profile</a>
+                  <a href="{{ rroute('profile.edit') }}" class="block px-3 py-2 underline">Profile</a>
                 </li>
                 <li>
-                  <x-form method="POST" action="{{ route('logout') }}">
+                  <x-form method="POST" action="{{ rroute('logout') }}">
                     <button type="submit" class="block w-full text-left px-3 py-2 underline">Log out</button>
                   </x-form>
                 </li>
