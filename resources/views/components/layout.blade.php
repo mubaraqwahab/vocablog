@@ -10,13 +10,13 @@
     <nav class="border-b">
       <div class="flex justify-between items-center container py-4 max-w-prose">
         <a href="/" class="font-bold">{{ config('app.name') }}</a>
-        @auth
+        @if (Auth::user()?->name)
           <details class="relative">
             <summary>{{ Auth::user()->name }}</summary>
             <div class="absolute top-full right-0 w-40 border p-2 bg-white mt-2 shadow">
               <ul>
                 <li>
-                  <a href="{{ rroute('profile.edit') }}" class="block px-3 py-2 underline">Profile</a>
+                  <a href="{{ rroute('profile') }}" class="block px-3 py-2 underline">Profile</a>
                 </li>
                 <li>
                   <x-form method="POST" action="{{ rroute('logout') }}">
@@ -26,7 +26,7 @@
               </ul>
             </div>
           </details>
-        @endauth
+        @endif
       </div>
     </nav>
     <div class="container py-8 max-w-prose">

@@ -24,13 +24,13 @@
     @endforeach
   </ol>
 
-  <a href="{{ rroute('terms.edit', ['term' => $term]) }}" class="underline">Edit term</a>
+  <a href="{{ rroute('terms.edit', ['term' => $term]) }}" class="underline inline-block mb-3">Edit term</a>
   <div x-data>
     <button type="button" x-on:click="$refs.deleteTermDialog.showModal()" class="underline">Delete term</button>
-    <dialog x-ref="deleteTermDialog" class="border shadow-sm rounded-md p-4">
-      <strong class="">Delete term</strong>
-      <p>Are you sure you want to delete this term?</p>
-      <x-form method="DELETE" action="{{ rroute('terms.destroy', ['term' => $term]) }}">
+    <dialog x-ref="deleteTermDialog" class="border shadow-sm p-6">
+      <strong class="font-bold mb-3">Delete term</strong>
+      <p class="mb-3">Are you sure you want to delete this term?</p>
+      <x-form method="DELETE" action="{{ rroute('terms.destroy', ['term' => $term]) }}" class="flex gap-5">
         <button type="submit" formmethod="dialog" class="Button">No, keep it</button>
         <button type="submit" class="Button">Yes, delete it</button>
       </x-form>

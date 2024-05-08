@@ -2,39 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
-    {
-        return view("profile", [
-            "user" => $request->user(),
-        ]);
-    }
-
-    /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validate([
+            "name" => ["required", "string", "max:255"],
+        ]);
 
-        if ($request->user()->isDirty("email")) {
-            $request->user()->email_verified_at = null;
-        }
-
+        $request->user()->name = $validated["name"];
         $request->user()->save();
 
-        return redirect(rroute("profile.edit"))->with(
-            "status",
-            "profile-updated"
-        );
+        return $request->routeIs("profile")
+            ? redirect(rroute("profile"))->with("status", "profile-updated")
+            : redirect(rroute("terms.index"));
     }
 }

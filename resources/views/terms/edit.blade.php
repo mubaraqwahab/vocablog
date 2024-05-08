@@ -1,6 +1,6 @@
 <x-layout title='Edit term'>
   <a href="{{ rroute('terms.show', ['term' => $term]) }}" class="underline inline-block mb-3">Back to term</a>
-  <h1>Edit term</h1>
+  <h1 class="PageHeading">Edit term</h1>
 
   @if ($errors->any())
     <div>
@@ -14,12 +14,12 @@
   @endif
 
   <x-form method="PUT" action="{{ rroute('terms.update', ['term' => $term]) }}">
-    <div>
+    <div class="flex flex-col gap-1 mb-5 md:w-72">
       <label for="term">Term</label>
-      <input type="text" id="term" name="term" value="{{ old('term') ?? $term->term }}" required />
+      <input type="text" id="term" name="term" value="{{ old('term') ?? $term->term }}" required autocapitalize="off" />
     </div>
 
-    <div>
+    <div class="flex flex-col gap-1 mb-5 md:w-72">
       <label for="lang">Language</label>
       <select id="lang" name="lang" required>
         @foreach ($langs as $lang)
@@ -33,29 +33,31 @@
       </select>
     </div>
 
-    <fieldset>
-      <legend>Definitions</legend>
-      @php
-        $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
-        $defs = $term->definitions->map(function ($def) {
-          return [
-            'definition' => $def->definition,
-            'comment' => $def->comment,
-            'examples' => $def->examples->map(function ($ex) {
-              return $ex->example;
-            }),
-          ];
-        });
-      @endphp
-      <ol
-        x-data="{
-          defs: {{ Js::from(old('defs') ?? $defs) }},
-          newlyAddedThing: null, // could be 'definition' or 'example'
-        }"
-      >
+    @php
+      $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
+      $defs = $term->definitions->map(function ($def) {
+        return [
+          'definition' => $def->definition,
+          'comment' => $def->comment,
+          'examples' => $def->examples->map(function ($ex) {
+            return $ex->example;
+          }),
+        ];
+      });
+    @endphp
+
+    <fieldset
+      class="mb-3"
+      x-data="{
+        defs: {{ Js::from(old('defs') ?? $defs) }},
+        newlyAddedThing: null, // could be 'definition' or 'example'
+      }"
+    >
+      <legend class="font-bold text-lg mb-3">Definitions</legend>
+      <ol class="ml-4 list-decimal">
         <template x-for="(def, i) in defs">
-          <li>
-            <div>
+          <li class="mb-5">
+            <div class="flex flex-col gap-1 mb-5">
               <label x-bind:for="`definition-${i}`">Definition</label>
               <textarea
                 x-bind:name="`defs[${i}][definition]`"
@@ -71,47 +73,59 @@
                 required
               ></textarea>
             </div>
+
             <fieldset>
-              <legend>Examples</legend>
-              <ul>
+              <legend class="mb-3">
+                <strong class="font-bold">Examples</strong>
+                <p>You can add up to 3 examples.</p>
+              </legend>
+
+              <ul class="list-disc pl-4">
                 <template x-for="(_, j) in def.examples">
                   <li>
-                    <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
-                    <input
-                      type="text"
-                      x-bind:id="`example-${i}-${j}`"
-                      x-bind:name="`defs[${i}][examples][${j}]`"
-                      x-model="def.examples[j]"
-                      x-init="() => {
-                        if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
-                          $el.focus();
-                          newlyAddedThing = null;
-                        }
-                      }"
-                      required
-                    />
-                    <button
-                      type="button"
-                      x-show="def.examples.length > 1"
-                      x-on:click="def.examples.splice(j, 1)"
-                    >
-                      Remove this example
-                    </button>
-                    <button
-                      type="button"
-                      x-show="j === def.examples.length - 1 && def.examples.length < 3"
-                      x-on:click="() => {
-                        def.examples.push('');
-                        newlyAddedThing = 'example';
-                      }"
-                    >
-                      Add another example
-                    </button>
+                    <div class="grid grid-cols-[1fr_auto_auto] gap-1">
+                      <div class="flex flex-col gap-1 mb-5">
+                        <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
+                        <input
+                          type="text"
+                          x-bind:id="`example-${i}-${j}`"
+                          x-bind:name="`defs[${i}][examples][${j}]`"
+                          x-model="def.examples[j]"
+                          x-init="() => {
+                            if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
+                              $el.focus();
+                              newlyAddedThing = null;
+                            }
+                          }"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        x-on:click="def.examples.splice(j, 1)"
+                        class="Button self-center"
+                      >
+                        Delete example
+                      </button>
+                    </div>
                   </li>
                 </template>
               </ul>
+
+              <template x-if="def.examples.length < 3">
+                <button
+                  type="button"
+                  x-on:click="() => {
+                    def.examples.push('');
+                    newlyAddedThing = 'example';
+                  }"
+                  x-text="def.examples.length === 0 ? 'Add an example' : 'Add another example'"
+                  class="Button mb-5"
+                ></button>
+              </template>
             </fieldset>
-            <div>
+
+            <div class="flex flex-col gap-1 mb-5">
               <label x-bind:for="`comment-${i}`">Comment</label>
               <textarea
                 x-bind:name="`defs[${i}][comment]`"
@@ -120,29 +134,32 @@
                 x-on:keydown.enter.prevent
               ></textarea>
             </div>
+
             <template x-if="defs.length > 1">
               <button
                 type="button"
                 x-on:click="defs.splice(i, 1)"
+                class="Button"
               >
-                Remove this definition
-              </button>
-            </template>
-            <template x-if="i === defs.length - 1">
-              <button
-                type="button"
-                x-on:click="() => {
-                  defs.push({{ Js::from($emptyDef) }});
-                  newlyAddedThing = 'definition';
-                }"
-              >
-                Add another definition
+                Delete definition
               </button>
             </template>
           </li>
         </template>
       </ol>
+
+      <button
+        type="button"
+        x-on:click="() => {
+          defs.push({{ Js::from($emptyDef) }});
+          newlyAddedThing = 'definition';
+        }"
+        class="Button"
+      >
+        Add another definition
+      </button>
     </fieldset>
-    <button type="submit">Save term</button>
+
+    <button type="submit" class="Button">Save term</button>
   </x-form>
 </x-layout>

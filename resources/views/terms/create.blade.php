@@ -16,7 +16,7 @@
   <x-form method="POST" action="{{ rroute('terms.store') }}">
     <div class="flex flex-col gap-1 mb-5 md:w-72">
       <label for="term">Term</label>
-      <input type="text" id="term" name="term" value="{{ old('term') }}" required />
+      <input type="text" id="term" name="term" value="{{ old('term') }}" required autocapitalize="off" />
     </div>
 
     <div class="flex flex-col gap-1 mb-5 md:w-72">
@@ -33,18 +33,19 @@
       </select>
     </div>
 
-    <fieldset class="mb-3">
+    @php
+      $emptyDef = ['definition' => '', 'examples' => [], 'comment' => ''];
+    @endphp
+
+    <fieldset
+      class="mb-3"
+      x-data="{
+        defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
+        newlyAddedThing: null, // could be 'definition' or 'example'
+      }"
+    >
       <legend class="font-bold text-lg mb-3">Definitions</legend>
-      @php
-        $emptyDef = ['definition' => '', 'examples' => [], 'comment' => ''];
-      @endphp
-      <ol
-        class="ml-4 list-decimal"
-        x-data="{
-          defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
-          newlyAddedThing: null, // could be 'definition' or 'example'
-        }"
-      >
+      <ol class="ml-4 list-decimal">
         <template x-for="(def, i) in defs">
           <li class="mb-5">
             <div class="flex flex-col gap-1 mb-5">
@@ -90,13 +91,13 @@
                           required
                         />
                       </div>
-                        <button
-                          type="button"
-                          x-on:click="def.examples.splice(j, 1)"
-                          class="Button self-center"
-                        >
-                          Delete example
-                        </button>
+                      <button
+                        type="button"
+                        x-on:click="def.examples.splice(j, 1)"
+                        class="Button self-center"
+                      >
+                        Delete example
+                      </button>
                     </div>
                   </li>
                 </template>
@@ -137,6 +138,7 @@
           </li>
         </template>
       </ol>
+
       <button
         type="button"
         x-on:click="() => {

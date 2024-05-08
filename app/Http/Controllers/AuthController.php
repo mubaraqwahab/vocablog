@@ -11,17 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
-function omit_origin($url)
-{
-    $parsed = parse_url($url);
-    $omitted =
-        $parsed["path"] .
-        (isset($parsed["query"]) ? "?{$parsed["query"]}" : "") .
-        (isset($parsed["fragment"]) ? "#{$parsed["fragment"]}" : "");
-    return $omitted;
-}
-
-class AuthenticatedSessionController extends Controller
+class AuthController extends Controller
 {
     public function sendLoginLink(Request $request): RedirectResponse
     {
@@ -67,7 +57,7 @@ class AuthenticatedSessionController extends Controller
         session()->put("url.intended", $request->query("intended"));
 
         return $user->wasRecentlyCreated
-            ? redirect(rroute("new-user"))
+            ? redirect(rroute("complete-profile"))
             : redirect()->intended(rroute("terms.index"));
     }
 
