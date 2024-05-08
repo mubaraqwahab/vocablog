@@ -1,3 +1,22 @@
+<nav class="flex justify-between items-center">
+  <a href="/">{{ config('app.name') }}</a>
+  <details class="relative">
+    <summary>{{ Auth::user()->name }}</summary>
+    <div class="absolute top-full right-0 w-40">
+      <ul>
+        <li>
+          <a href="{{ route('profile.edit') }}">Profile</a>
+        </li>
+        <li>
+          <x-form method="POST" action="{{ route('logout') }}">
+            <button type="submit">Log out</button>
+          </x-form>
+        </li>
+      </ul>
+    </div>
+  </details>
+</nav>
+
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -16,10 +16,7 @@ Route::middleware("guest")->group(function () {
         "check-your-email"
     );
 
-    Route::get("verify/{email}", [
-        AuthenticatedSessionController::class,
-        "store",
-    ])
+    Route::get("verify", [AuthenticatedSessionController::class, "store"])
         ->middleware(["signed", "throttle:6,1"])
         ->name("verify");
 });

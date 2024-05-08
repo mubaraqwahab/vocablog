@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
+function omit_origin($url)
+{
+    $parsed = parse_url($url);
+    $omitted =
+        $parsed["path"] .
+        (isset($parsed["query"]) ? "?{$parsed["query"]}" : "") .
+        (isset($parsed["fragment"]) ? "#{$parsed["fragment"]}" : "");
+    return $omitted;
+}
+
 class AuthenticatedSessionController extends Controller
 {
     public function sendLoginLink(Request $request): RedirectResponse
@@ -20,14 +30,20 @@ class AuthenticatedSessionController extends Controller
         ]);
 
         $email = $validated["email"];
+        $intended = omit_origin(redirect()->intended()->getTargetUrl());
 
-        $url = URL::temporarySignedRoute("verify", now()->addMinutes(30), [
-            "email" => $email,
-            "intended" => redirect()->intended()->getTargetUrl(),
-        ]);
+        $signedUrl = URL::temporarySignedRoute(
+            "verify",
+            expiration: now()->addMinutes(30),
+            parameters: ["email" => $email, "intended" => $intended]
+        );
 
-        // TODO: queue this
-        Mail::to($email)->sendNow(new LoginLink($url));
+        if (app()->environment() === "production") {
+            $signedUrl = str_replace("http://", "https://", $signedUrl);
+        }
+
+        Mail::to($email)->sendNow(new LoginLink($signedUrl));
+        // TODO: what to do if email fails?
 
         return redirect(rroute("check-your-email"));
     }
@@ -35,8 +51,9 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(Request $request, string $email): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
+        $email = $request->query("email");
         $user = User::query()->firstOrCreate(["email" => $email]);
 
         if (!$user->hasVerifiedEmail()) {
