@@ -23,8 +23,10 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::middleware("auth")->group(function () {
-    Route::view("profile", "profile")->name("profile");
-    Route::patch("profile", [ProfileController::class, "update"]);
+    Route::view("profile", "profile")->name("profile.edit");
+    Route::patch("profile", [ProfileController::class, "update"])->name(
+        "profile.update"
+    );
 
     Route::view("complete-profile", "complete-profile")->name(
         "complete-profile"

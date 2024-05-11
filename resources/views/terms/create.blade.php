@@ -124,7 +124,7 @@
               </template>
             </div>
 
-            <div class="FormControl">
+            <div class="FormGroup">
               <label x-bind:for="`comment-${i}`" class="Label">
                 <span class="Label-text">Comment</span>
                 <small class="Label-helper">

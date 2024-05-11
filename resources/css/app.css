@@ -56,6 +56,10 @@
     @apply rounded border-gray-300;
   }
 
+  .FormControl.is-readonly {
+    @apply bg-gray-100;
+  }
+
   .debug {
     @apply border-2 border-red-700;
   }

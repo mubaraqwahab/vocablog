@@ -19,8 +19,13 @@ class ProfileController extends Controller
         $request->user()->name = $validated["name"];
         $request->user()->save();
 
-        return $request->routeIs("profile")
-            ? redirect(rroute("profile"))->with("status", "profile-updated")
+        // TODO: document your intent here or refactor the code
+        // to express your intent.
+        return $request->routeIs("profile.update")
+            ? redirect(rroute("profile.edit"))->with(
+                "status",
+                "profile-updated"
+            )
             : redirect(rroute("terms.index"));
     }
 }
