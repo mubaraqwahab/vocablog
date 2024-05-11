@@ -13,13 +13,13 @@
     </div>
   @endif
 
-  <x-form method="POST" action="{{ rroute('terms.store') }}">
-    <div class="flex flex-col gap-1 mb-5 md:w-72">
+  <x-form method="POST" action="{{ rroute('terms.store') }}" class="space-y-5">
+    <div class="flex flex-col gap-1 md:w-72">
       <label for="term">Term</label>
       <input type="text" id="term" name="term" value="{{ old('term') }}" required autocapitalize="off" />
     </div>
 
-    <div class="flex flex-col gap-1 mb-5 md:w-72">
+    <div class="flex flex-col gap-1 md:w-72">
       <label for="lang">Language</label>
       <select id="lang" name="lang" required>
         @foreach ($langs as $lang)
@@ -34,11 +34,11 @@
     </div>
 
     @php
-      $emptyDef = ['definition' => '', 'examples' => [], 'comment' => ''];
+      $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
     @endphp
 
     <fieldset
-      class="mb-3"
+      class=""
       x-data="{
         defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
         newlyAddedThing: null, // could be 'definition' or 'example'
@@ -47,8 +47,8 @@
       <legend class="font-bold text-lg mb-3">Definitions</legend>
       <ol class="ml-4 list-decimal">
         <template x-for="(def, i) in defs">
-          <li class="mb-5">
-            <div class="flex flex-col gap-1 mb-5">
+          <li class="mb-5 space-y-5">
+            <div class="flex flex-col gap-1">
               <label x-bind:for="`definition-${i}`">Definition</label>
               <textarea
                 x-bind:name="`defs[${i}][definition]`"
@@ -73,15 +73,15 @@
 
               <ul class="list-disc pl-4">
                 <template x-for="(_, j) in def.examples">
-                  <li>
-                    <div class="grid grid-cols-[1fr_auto_auto] gap-1">
+                  <li class="mb-5">
+                    <div class="">
                       <div class="flex flex-col gap-1 mb-5">
                         <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
-                        <input
-                          type="text"
+                        <textarea
                           x-bind:id="`example-${i}-${j}`"
                           x-bind:name="`defs[${i}][examples][${j}]`"
                           x-model="def.examples[j]"
+                          x-on:keydown.enter.prevent
                           x-init="() => {
                             if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
                               $el.focus();
@@ -89,12 +89,12 @@
                             }
                           }"
                           required
-                        />
+                        ></textarea>
                       </div>
                       <button
                         type="button"
                         x-on:click="def.examples.splice(j, 1)"
-                        class="Button self-center"
+                        class="Button Button--outline-danger"
                       >
                         Delete example
                       </button>
@@ -111,7 +111,7 @@
                     newlyAddedThing = 'example';
                   }"
                   x-text="def.examples.length === 0 ? 'Add an example' : 'Add another example'"
-                  class="Button mb-5"
+                  class="Button Button--secondary mb-5"
                 ></button>
               </template>
             </fieldset>
@@ -130,7 +130,7 @@
               <button
                 type="button"
                 x-on:click="defs.splice(i, 1)"
-                class="Button"
+                class="Button Button--outline-danger"
               >
                 Delete definition
               </button>
@@ -145,12 +145,12 @@
           defs.push({{ Js::from($emptyDef) }});
           newlyAddedThing = 'definition';
         }"
-        class="Button"
+        class="Button Button--secondary"
       >
         Add another definition
       </button>
     </fieldset>
 
-    <button type="submit" class="Button">Save term</button>
+    <button type="submit" class="Button Button--primary">Save term</button>
   </x-form>
 </x-layout>

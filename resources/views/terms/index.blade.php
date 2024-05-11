@@ -2,7 +2,7 @@
   <h1 class="PageHeading">My vocabulary</h1>
 
   @if (count($terms))
-    <a href="{{ rroute('terms.create') }}" class="Button mb-4">New term</a>
+    <a href="{{ rroute('terms.create') }}" class="Button Button--secondary mb-4">New term</a>
     <p class="text-sm text-gray-500 mb-4">Showing {{ count($terms) }} out of {{ $terms->total() }} terms</p>
     <ul class="grid gap-4">
       @foreach ($terms as $term)
