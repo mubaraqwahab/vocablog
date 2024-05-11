@@ -53,7 +53,7 @@
       }"
     >
       <p class="mb-3">
-        <strong class="font-semibold text-lg">Definitions</strong>
+        <strong class="text-lg">Definitions</strong>
       </p>
 
       <ol class="pl-6 list-decimal">
@@ -79,7 +79,7 @@
 
             <div class="space-y-3">
               <p class="flex flex-col">
-                <strong class="font-semibold">Examples</strong>
+                <strong>Examples</strong>
                 <span class="text-gray-500">You can add up to 3 examples.</span>
               </p>
 

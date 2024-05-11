@@ -6,6 +6,10 @@
   :focus-visible {
     @apply !outline-black !outline-2 !outline-offset-0 outline;
   }
+
+  strong {
+    @apply font-semibold;
+  }
 }
 
 @layer components {
