@@ -14,7 +14,7 @@
   }
 
   .Button {
-    @apply inline-block border px-3 py-2 rounded text-sm font-medium;
+    @apply inline-block border px-3 py-2 rounded text-sm font-semibold;
   }
 
   .Button--primary {
@@ -28,12 +28,31 @@
   }
 
   .Button--danger {
-    @apply bg-red-600 border-red-600 text-white;
-    @apply hover:bg-red-700 hover:border-red-700;
+    @apply bg-gray-200 border-gray-200 text-red-800;
+    @apply hover:bg-red-800 hover:border-red-800 hover:text-white;
   }
 
-  .Button--outline-danger {
-    @apply bg-white border-red-600 text-red-800;
-    @apply hover:bg-red-100;
+  .FormGroup {
+    @apply flex flex-col gap-y-1.5;
+  }
+
+  .Label {
+    @apply flex flex-col leading-tight;
+  }
+
+  .Label-text {
+    @apply font-semibold;
+  }
+
+  .Label-helper {
+    @apply text-sm text-gray-500;
+  }
+
+  .FormControl {
+    @apply rounded border-gray-300;
+  }
+
+  .debug {
+    @apply border-2 border-red-700;
   }
 }

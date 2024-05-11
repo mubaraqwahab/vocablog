@@ -22,6 +22,8 @@ class TermController extends Controller
         $terms = Term::query()
             ->withCount("definitions")
             ->whereBelongsTo($request->user(), "owner")
+            ->latest("updated_at")
+            // ->ddRawSql()
             ->paginate();
 
         return view("terms.index", ["terms" => $terms]);
@@ -120,6 +122,9 @@ class TermController extends Controller
         DB::transaction(function () use ($validated, $term) {
             $term->term = $validated["term"];
             $term->lang_id = $validated["lang"];
+            // If a only def or example is updated, let the time reflect on the term too.
+            // (Laravel won't update the DB if the model isn't dirty.)
+            $term->updated_at = now();
             $term->save();
 
             // TODO: consider using a JSON array for the defs.

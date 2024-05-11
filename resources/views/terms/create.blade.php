@@ -1,6 +1,5 @@
 <x-layout title="New term">
-  <a href="{{ rroute('terms.index') }}" class="underline inline-block mb-3">Back to terms</a>
-  <h1 class="PageHeading">New term</h1>
+  <h1 class="PageHeading">Add a new term</h1>
 
   @if ($errors->any())
     <div>
@@ -13,15 +12,24 @@
     </div>
   @endif
 
-  <x-form method="POST" action="{{ rroute('terms.store') }}" class="space-y-5">
-    <div class="flex flex-col gap-1 md:w-72">
-      <label for="term">Term</label>
-      <input type="text" id="term" name="term" value="{{ old('term') }}" required autocapitalize="off" />
+  <x-form method="POST" action="{{ rroute('terms.store') }}" class="flex flex-col gap-y-5">
+    <p class="italic text-gray-500">Required fields are marked with an asterisk (*).</p>
+
+    <div class="FormGroup">
+      <label for="term" class="Label">
+        <span class="Label-text">Term *</span>
+        <small class="Label-helper">A term can be a word, a phrase or any other form of expression.</small>
+      </label>
+      <input
+        type="text" id="term" name="term" value="{{ old('term') }}"
+        required autocapitalize="off"
+        class="FormControl"
+      />
     </div>
 
-    <div class="flex flex-col gap-1 md:w-72">
-      <label for="lang">Language</label>
-      <select id="lang" name="lang" required>
+    <div class="FormGroup">
+      <label for="lang" class="Label Label-text">Language *</label>
+      <select id="lang" name="lang" required class="FormControl">
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
@@ -34,22 +42,25 @@
     </div>
 
     @php
-      $emptyDef = ['definition' => '', 'examples' => [''], 'comment' => ''];
+      $emptyDef = ['definition' => '', 'examples' => [], 'comment' => ''];
     @endphp
 
-    <fieldset
-      class=""
+    <div
+      class="mt-1"
       x-data="{
         defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
         newlyAddedThing: null, // could be 'definition' or 'example'
       }"
     >
-      <legend class="font-bold text-lg mb-3">Definitions</legend>
-      <ol class="ml-4 list-decimal">
-        <template x-for="(def, i) in defs">
+      <p class="mb-3">
+        <strong class="font-semibold text-lg">Definitions</strong>
+      </p>
+
+      <ol class="pl-6 list-decimal">
+        <template x-for="(def, i) in defs" hidden>
           <li class="mb-5 space-y-5">
-            <div class="flex flex-col gap-1">
-              <label x-bind:for="`definition-${i}`">Definition</label>
+            <div class="FormGroup">
+              <label x-bind:for="`definition-${i}`" class="Label Label-text">Definition *</label>
               <textarea
                 x-bind:name="`defs[${i}][definition]`"
                 x-bind:id="`definition-${i}`"
@@ -57,53 +68,55 @@
                 x-on:keydown.enter.prevent
                 x-init="() => {
                   if (newlyAddedThing === 'definition' && i === defs.length - 1) {
-                    $el.focus();
+                    $nextTick(() => $el.focus());
                     newlyAddedThing = null;
                   }
                 }"
                 required
+                class="FormControl"
               ></textarea>
             </div>
 
-            <fieldset>
-              <legend class="mb-3">
-                <strong class="font-bold">Examples</strong>
-                <p>You can add up to 3 examples.</p>
-              </legend>
+            <div class="space-y-3">
+              <p class="flex flex-col">
+                <strong class="font-semibold">Examples</strong>
+                <span class="text-gray-500">You can add up to 3 examples.</span>
+              </p>
 
-              <ul class="list-disc pl-4">
-                <template x-for="(_, j) in def.examples">
-                  <li class="mb-5">
-                    <div class="">
-                      <div class="flex flex-col gap-1 mb-5">
-                        <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`"></label>
-                        <textarea
-                          x-bind:id="`example-${i}-${j}`"
-                          x-bind:name="`defs[${i}][examples][${j}]`"
-                          x-model="def.examples[j]"
-                          x-on:keydown.enter.prevent
-                          x-init="() => {
-                            if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
-                              $el.focus();
-                              newlyAddedThing = null;
-                            }
-                          }"
-                          required
-                        ></textarea>
-                      </div>
-                      <button
-                        type="button"
-                        x-on:click="def.examples.splice(j, 1)"
-                        class="Button Button--outline-danger"
-                      >
-                        Delete example
-                      </button>
+              <ul class="list-disc pl-6 space-y-3" x-show="def.examples.length > 0">
+                <template x-for="(_, j) in def.examples" hidden>
+                  <li class="space-y-2">
+                    <div class="FormGroup">
+                      <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1} *`" class="Label Label-text"></label>
+                      <textarea
+                        x-bind:id="`example-${i}-${j}`"
+                        x-bind:name="`defs[${i}][examples][${j}]`"
+                        x-model="def.examples[j]"
+                        x-on:keydown.enter.prevent
+                        x-init="() => {
+                          if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
+                            console.log('inited textarea', { newlyAddedThing, j, l: def.examples.length, $el })
+                            $nextTick(() => $el.focus());
+                            newlyAddedThing = null;
+                          }
+                        }"
+                        required
+                        class="FormControl"
+                      ></textarea>
                     </div>
+
+                    <button
+                      type="button"
+                      x-on:click="def.examples.splice(j, 1)"
+                      class="Button Button--danger"
+                    >
+                      Delete example
+                    </button>
                   </li>
                 </template>
               </ul>
 
-              <template x-if="def.examples.length < 3">
+              <template x-if="def.examples.length < 3" hidden>
                 <button
                   type="button"
                   x-on:click="() => {
@@ -111,26 +124,33 @@
                     newlyAddedThing = 'example';
                   }"
                   x-text="def.examples.length === 0 ? 'Add an example' : 'Add another example'"
-                  class="Button Button--secondary mb-5"
+                  class="Button Button--secondary"
                 ></button>
               </template>
-            </fieldset>
+            </div>
 
-            <div class="flex flex-col gap-1 mb-5">
-              <label x-bind:for="`comment-${i}`">Comment (optional)</label>
+            <div class="flex flex-col gap-1.5 mb-5">
+              <label x-bind:for="`comment-${i}`" class="Label">
+                <span class="Label-text">Comment</span>
+                <small class="Label-helper">
+                  Here you can write things like how to use this term,
+                  or how this term compares to related terms.
+                </small>
+              </label>
               <textarea
                 x-bind:name="`defs[${i}][comment]`"
                 x-bind:id="`comment-${i}`"
                 x-model="def.comment"
                 x-on:keydown.enter.prevent
+                class="FormControl"
               ></textarea>
             </div>
 
-            <template x-if="defs.length > 1">
+            <template x-if="defs.length > 1" hidden>
               <button
                 type="button"
                 x-on:click="defs.splice(i, 1)"
-                class="Button Button--outline-danger"
+                class="Button Button--danger"
               >
                 Delete definition
               </button>
@@ -149,8 +169,8 @@
       >
         Add another definition
       </button>
-    </fieldset>
+    </div>
 
-    <button type="submit" class="Button Button--primary">Save term</button>
+    <button type="submit" class="Button Button--primary self-start">Save term</button>
   </x-form>
 </x-layout>

@@ -1,5 +1,4 @@
 <x-layout title="{{ $term->term }}">
-  <a href="{{ rroute('terms.index') }}" class="underline inline-block mb-3">Back to terms</a>
   <h1 class="PageHeading">{{ $term->term }}</h1>
   <p class="text-sm uppercase mb-4">{{ $term->lang->name }}</p>
 
@@ -31,7 +30,7 @@
     <dialog x-ref="deleteTermDialog" class="border shadow-sm p-6">
       <strong class="font-bold mb-3">Delete term</strong>
       <p class="mb-3">Are you sure you want to delete this term?</p>
-      <x-form method="DELETE" action="{{ rroute('terms.destroy', ['term' => $term]) }}" class="flex gap-3">
+      <x-form method="DELETE" action="{{ rroute('terms.destroy', ['term' => $term]) }}" class="flex gap-3 justify-end">
         <button type="submit" formmethod="dialog" class="Button Button--secondary">No, keep it</button>
         <button type="submit" class="Button Button--danger">Yes, delete it</button>
       </x-form>
