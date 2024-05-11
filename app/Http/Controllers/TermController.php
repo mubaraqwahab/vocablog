@@ -7,6 +7,7 @@ use App\Models\Example;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -23,7 +24,6 @@ class TermController extends Controller
             ->withCount("definitions")
             ->whereBelongsTo($request->user(), "owner")
             ->latest("updated_at")
-            // ->ddRawSql()
             ->paginate();
 
         return view("terms.index", ["terms" => $terms]);
