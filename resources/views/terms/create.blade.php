@@ -41,14 +41,10 @@
       </select>
     </div>
 
-    @php
-      $emptyDef = ['definition' => '', 'examples' => [], 'comment' => ''];
-    @endphp
-
     <div
       class="mt-1"
       x-data="{
-        defs: {{ Js::from(old('defs') ?? [$emptyDef]) }},
+        defs: {{ Js::from(old('defs', [$emptyDef])) }},
         newlyAddedThing: null, // could be 'definition' or 'example'
       }"
     >
@@ -95,7 +91,6 @@
                         x-on:keydown.enter.prevent
                         x-init="() => {
                           if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
-                            console.log('inited textarea', { newlyAddedThing, j, l: def.examples.length, $el })
                             $nextTick(() => $el.focus());
                             newlyAddedThing = null;
                           }
@@ -129,7 +124,7 @@
               </template>
             </div>
 
-            <div class="flex flex-col gap-1.5 mb-5">
+            <div class="FormControl">
               <label x-bind:for="`comment-${i}`" class="Label">
                 <span class="Label-text">Comment</span>
                 <small class="Label-helper">

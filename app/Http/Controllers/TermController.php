@@ -35,7 +35,12 @@ class TermController extends Controller
     public function create()
     {
         $langs = Lang::query()->orderBy("name", "asc")->get();
-        return view("terms.create", ["langs" => $langs]);
+        $emptyDef = ["definition" => "", "examples" => [], "comment" => ""];
+
+        return view("terms.create", [
+            "langs" => $langs,
+            "emptyDef" => $emptyDef,
+        ]);
     }
 
     /**
@@ -97,7 +102,24 @@ class TermController extends Controller
 
         $term->load("definitions.examples");
         $langs = Lang::query()->orderBy("name", "asc")->get();
-        return view("terms.edit", ["term" => $term, "langs" => $langs]);
+
+        $emptyDef = ["definition" => "", "examples" => [], "comment" => ""];
+        $defs = $term->definitions->map(function ($def) {
+            return [
+                "definition" => $def->definition,
+                "comment" => $def->comment,
+                "examples" => $def->examples->map(function ($ex) {
+                    return $ex->example;
+                }),
+            ];
+        });
+
+        return view("terms.edit", [
+            "term" => $term,
+            "langs" => $langs,
+            "emptyDef" => $emptyDef,
+            "defs" => $defs,
+        ]);
     }
 
     public function update(Request $request, Term $term)
