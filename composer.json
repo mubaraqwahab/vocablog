@@ -10,6 +10,7 @@
   "require": {
     "php": "^8.2",
     "laravel/framework": "^11.0",
+    "laravel/socialite": "^5.14",
     "laravel/tinker": "^2.9",
     "symfony/http-client": "^7.0",
     "symfony/postmark-mailer": "^7.0"

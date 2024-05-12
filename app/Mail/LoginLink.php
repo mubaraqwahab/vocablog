@@ -25,7 +25,7 @@ class LoginLink extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Login Link");
+        return new Envelope(subject: "Log in to Vocablog");
     }
 
     /**
