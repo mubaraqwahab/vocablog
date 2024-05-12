@@ -10,9 +10,9 @@
     <nav class="border-b">
       <div class="flex justify-between items-center container py-4 max-w-prose">
         <a href="/" class="font-bold">{{ config('app.name') }}</a>
-        @if (Auth::user()?->name)
+        @auth
           <details class="relative">
-            <summary>{{ Auth::user()->name }}</summary>
+            <summary class="truncate max-w-40">{{ Auth::user()->name ?? Auth::user()->email }}</summary>
             <div class="absolute top-full right-0 w-40 border p-2 bg-white mt-2 shadow">
               <ul>
                 <li>
@@ -26,7 +26,7 @@
               </ul>
             </div>
           </details>
-        @endif
+        @endauth
       </div>
     </nav>
     <div class="container py-8 max-w-prose">

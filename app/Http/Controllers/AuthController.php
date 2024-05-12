@@ -57,7 +57,7 @@ class AuthController extends Controller
         session()->put("url.intended", $request->query("intended"));
 
         return $user->wasRecentlyCreated
-            ? redirect(rroute("complete-profile"))
+            ? redirect(rroute("profile.complete"))
             : redirect()->intended(rroute("terms.index"));
     }
 

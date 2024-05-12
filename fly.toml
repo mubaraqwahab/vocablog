@@ -25,6 +25,8 @@ console_command = 'php /var/www/html/artisan tinker'
   LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
   DB_CONNECTION = 'pgsql'
   MAIL_MAILER = 'postmark'
+  MAIL_FROM_ADDRESS = 'hello@vocablog.mubaraqwahab.com'
+  MAIL_FROM_NAME = 'Vocablog'
 
 [http_service]
   internal_port = 8080

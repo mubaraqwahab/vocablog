@@ -27,11 +27,9 @@ Route::middleware("auth")->group(function () {
     Route::patch("profile", [ProfileController::class, "update"])->name(
         "profile.update"
     );
-
     Route::view("complete-profile", "complete-profile")->name(
-        "complete-profile"
+        "profile.complete"
     );
-    Route::patch("complete-profile", [ProfileController::class, "update"]);
 
     Route::post("logout", [AuthController::class, "destroy"])->name("logout");
 });
