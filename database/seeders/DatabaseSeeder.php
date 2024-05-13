@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         DB::table("langs")->insert([
-            ["name" => "English"],
-            ["name" => "Yoruba"],
+            ["code" => "en", "name" => "English"],
+            ["code" => "yo", "name" => "Yoruba"],
         ]);
     }
 }

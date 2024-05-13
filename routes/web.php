@@ -36,4 +36,8 @@ Route::middleware("auth")->group(function () {
 
 Route::middleware(["auth", "verified"])->group(function () {
     Route::resource("terms", TermController::class);
+
+    Route::get('terms', [TermController::class, 'index'])->name('terms.index');
+    Route::post('terms', [TermController::class, 'store'])->name('terms.store');
+    Route::get('terms/{lang}/{term}', [TermController::class, 'show'])->name('terms.show');
 });

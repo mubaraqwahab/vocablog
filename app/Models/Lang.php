@@ -12,6 +12,8 @@ class Lang extends Model
     use HasFactory;
 
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = "string";
 
     public function terms(): HasMany
     {
