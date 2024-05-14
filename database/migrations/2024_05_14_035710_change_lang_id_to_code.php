@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -10,31 +12,27 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // Drop foreign key constraint
-        // Change type of foreign key attribute
-        // Change type of primary key
-        // Restore foreign key constraint
-        // Update value of primary key
-
-        Schema::table("terms2", function (Blueprint $table) {
+        Schema::table("terms", function (Blueprint $table) {
             $table->dropForeign(["lang_id"]);
         });
 
         // For some reason, when I put this and the above together,
         // the generated SQL statements aren't in my intended order.
-        Schema::table("terms2", function (Blueprint $table) {
+        Schema::table("terms", function (Blueprint $table) {
             $table->string("lang_id")->change();
         });
 
-        Schema::table("langs2", function (Blueprint $table) {
+        Schema::table("langs", function (Blueprint $table) {
             $table->string("id")->change();
         });
 
-        Schema::table("terms2", function (Blueprint $table) {
+        DB::statement("drop sequence if exists langs_id_seq");
+
+        Schema::table("terms", function (Blueprint $table) {
             $table
                 ->foreign("lang_id")
                 ->references("id")
-                ->on("langs2")
+                ->on("langs")
                 ->cascadeOnUpdate();
         });
     }
@@ -44,8 +42,29 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::table("terms", function (Blueprint $table) {
+            $table->dropForeign(["lang_id"]);
+        });
+
+        Schema::table("terms", function (Blueprint $table) {
+            $table->unsignedBigInteger("lang_id")->change();
+        });
+
+        DB::statement(
+            "create sequence langs_id_seq start with 1 increment by 1 no minvalue no maxvalue cache 1"
+        );
+
         Schema::table("langs", function (Blueprint $table) {
-            //
+            $table
+                ->unsignedBigInteger("id")
+                ->default(new Expression("nextval('langs_id_seq'::regclass)"))
+                ->change();
+        });
+
+        DB::statement("alter sequence langs_id_seq owned by langs.id");
+
+        Schema::table("terms", function (Blueprint $table) {
+            $table->foreign("lang_id")->references("id")->on("langs");
         });
     }
 };
