@@ -12,7 +12,7 @@
     </div>
   @endif
 
-  <x-form method="PUT" action="{{ rroute('terms.update', ['term' => $term]) }}" class="flex flex-col gap-y-5">
+  <x-form method="PUT" action="{{ rroute('terms.update', ['term' => $term, 'lang' => $term->lang]) }}" class="flex flex-col gap-y-5">
     <p class="italic text-gray-500">Required fields are marked with an asterisk (*).</p>
 
     <div class="FormGroup">

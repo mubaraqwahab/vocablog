@@ -7,7 +7,6 @@ use App\Models\Example;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -49,7 +48,7 @@ class TermController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "term" => ["required", "max:255", "unique:terms"],
+            "term" => ["required", "max:255"],
             "lang" => ["required", "exists:langs,id"],
             "defs" => ["required", "array", "min:1"],
             "defs.*.definition" => ["required", "max:255"],
@@ -88,7 +87,7 @@ class TermController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Term $term)
+    public function show(Lang $lang, Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
@@ -96,7 +95,7 @@ class TermController extends Controller
         return view("terms.show", ["term" => $term]);
     }
 
-    public function edit(Term $term)
+    public function edit(Lang $lang, Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 

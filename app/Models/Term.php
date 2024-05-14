@@ -32,4 +32,9 @@ class Term extends Model
     {
         return $this->hasMany(Definition::class);
     }
+
+    public function getRouteKeyName()
+    {
+        return "term";
+    }
 }

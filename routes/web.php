@@ -11,6 +11,7 @@ Route::get("/", function () {
 
 Route::middleware("guest")->group(function () {
     Route::view("login", "login")->name("login");
+
     Route::post("login", [AuthController::class, "sendLoginLink"]);
 
     Route::view("check-your-email", "check-your-email")->name(
@@ -24,9 +25,11 @@ Route::middleware("guest")->group(function () {
 
 Route::middleware("auth")->group(function () {
     Route::view("profile", "profile")->name("profile.edit");
+
     Route::patch("profile", [ProfileController::class, "update"])->name(
         "profile.update"
     );
+
     Route::view("complete-profile", "complete-profile")->name(
         "profile.complete"
     );
@@ -35,9 +38,25 @@ Route::middleware("auth")->group(function () {
 });
 
 Route::middleware(["auth", "verified"])->group(function () {
-    Route::resource("terms", TermController::class);
+    Route::get("terms/{lang}/{term}", [TermController::class, "show"])
+        ->name("terms.show")
+        ->scopeBindings();
 
-    Route::get('terms', [TermController::class, 'index'])->name('terms.index');
-    Route::post('terms', [TermController::class, 'store'])->name('terms.store');
-    Route::get('terms/{lang}/{term}', [TermController::class, 'show'])->name('terms.show');
+    Route::get("terms/{lang}/{term}/edit", [TermController::class, "edit"])
+        ->name("terms.edit")
+        ->scopeBindings();
+
+    Route::put("terms/{lang}/{term}", [TermController::class, "update"])
+        ->name("terms.update")
+        ->scopeBindings();
+
+    Route::delete("terms/{lang}/{term}", [TermController::class, "destroy"])
+        ->name("terms.destroy")
+        ->scopeBindings();
+
+    Route::resource("terms", TermController::class)->only([
+        "index",
+        "create",
+        "store",
+    ]);
 });
