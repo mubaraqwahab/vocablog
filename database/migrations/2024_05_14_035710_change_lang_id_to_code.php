@@ -17,12 +17,25 @@ return new class extends Migration {
         // Update value of primary key
 
         Schema::table("terms2", function (Blueprint $table) {
-            $table->dropForeign("lang_id");
+            $table->dropForeign(["lang_id"]);
+        });
+
+        // For some reason, when I put this and the above together,
+        // the generated SQL statements aren't in my intended order.
+        Schema::table("terms2", function (Blueprint $table) {
             $table->string("lang_id")->change();
         });
 
         Schema::table("langs2", function (Blueprint $table) {
             $table->string("id")->change();
+        });
+
+        Schema::table("terms2", function (Blueprint $table) {
+            $table
+                ->foreign("lang_id")
+                ->references("id")
+                ->on("langs2")
+                ->cascadeOnUpdate();
         });
     }
 
