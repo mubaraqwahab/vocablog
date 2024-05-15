@@ -13,6 +13,11 @@ class Term extends Model
 
     protected $with = ["lang"];
 
+    protected function casts()
+    {
+        return ["defs" => "array"];
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class);
