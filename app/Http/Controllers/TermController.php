@@ -7,12 +7,21 @@ use App\Models\Example;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
+function uniqueTermRule()
+{
+    return Rule::unique("terms")->where(function (Builder $query) {
+        $request = request();
+        return $query
+            ->where("owner_id", $request->user()->id)
+            ->where("lang_id", $request->input("lang"));
+    });
+}
 
 class TermController extends Controller
 {
@@ -49,20 +58,9 @@ class TermController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
+        $validated = $request->validate(
             [
-                "term" => [
-                    "required",
-                    "max:255",
-                    Rule::unique("terms")->where(function ($query) use (
-                        $request
-                    ) {
-                        return $query
-                            ->where("owner_id", $request->user()->id)
-                            ->where("lang_id", $request->input("lang"));
-                    }),
-                ],
+                "term" => ["required", "max:255", uniqueTermRule()],
                 "lang" => ["required", "exists:langs,id"],
                 "defs" => ["required", "array", "min:1"],
                 "defs.*.definition" => ["required", "max:255"],
@@ -70,13 +68,8 @@ class TermController extends Controller
                 "defs.*.examples.*" => ["required", "max:255"],
                 "defs.*.comment" => ["max:255"],
             ],
-            [
-                "term.unique" =>
-                    "You already have an existing term from the same language in your Vocablog. You might want to edit that term instead.",
-            ]
-        )->after(function () {});
-
-        $validated = $validator->validate();
+            ["term.unique" => "You already have this term in your Vocablog."]
+        );
 
         DB::transaction(function () use ($validated, $request) {
             $term = new Term();
@@ -151,13 +144,7 @@ class TermController extends Controller
                 "term" => [
                     "required",
                     "max:255",
-                    Rule::unique("terms")
-                        ->where(function ($query) use ($request) {
-                            return $query
-                                ->where("owner_id", $request->user()->id)
-                                ->where("lang_id", $request->input("lang"));
-                        })
-                        ->ignoreModel($term),
+                    uniqueTermRule()->ignoreModel($term),
                 ],
                 "lang" => ["required", "exists:langs,id"],
                 "defs" => ["required", "array", "min:1"],
@@ -166,10 +153,7 @@ class TermController extends Controller
                 "defs.*.examples.*" => ["required", "max:255"],
                 "defs.*.comment" => ["max:255"],
             ],
-            [
-                "term.unique" =>
-                    "You already have an existing term for the same language in your Vocablog. You might want to edit that term instead.",
-            ]
+            ["term.unique" => "You already have this term in your Vocablog."]
         );
 
         DB::transaction(function () use ($validated, $term) {
