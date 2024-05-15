@@ -30,7 +30,7 @@
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
-            @if ($lang->id === (int) old('lang', $term->lang_id)) selected @endif
+            @if ($lang->id === old('lang', $term->lang_id)) selected @endif
           >
             {{ $lang->name }}
           </option>

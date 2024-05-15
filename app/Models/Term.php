@@ -11,11 +11,6 @@ class Term extends Model
 {
     use HasFactory;
 
-    /**
-     * The relationships that should always be loaded.
-     *
-     * @var array
-     */
     protected $with = ["lang"];
 
     public function owner(): BelongsTo
