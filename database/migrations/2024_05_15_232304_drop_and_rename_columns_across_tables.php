@@ -20,7 +20,6 @@ return new class extends Migration {
         });
 
         Schema::table("terms", function (Blueprint $table) {
-            $table->dropColumn("defs");
             $table->renameColumn("term", "name");
         });
     }
