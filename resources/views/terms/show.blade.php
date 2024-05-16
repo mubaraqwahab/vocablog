@@ -1,16 +1,16 @@
 <x-layout title="{{ $term->term }}">
-  <h1 class="PageHeading">{{ $term->term }}</h1>
+  <h1 class="PageHeading">{{ $term->name }}</h1>
   <p class="text-sm uppercase mb-5 text-gray-500">{{ $term->lang->name }}</p>
 
   <ol class="pl-6 space-y-6">
     @foreach ($term->definitions as $def)
       <li class="list-decimal">
-        <p>{{ $def->definition }}</p>
+        <p>{{ $def->text }}</p>
         @if (count($def->examples))
           <strong class="inline-block mt-2">Examples</strong>
           <ul class="pl-6 italic list-disc">
             @foreach ($def->examples as $e)
-              <li>{{ $e->example }}</li>
+              <li>{{ $e->text }}</li>
             @endforeach
           </ul>
         @endif

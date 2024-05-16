@@ -30,6 +30,6 @@ class Term extends Model
 
     public function getRouteKeyName()
     {
-        return "term";
+        return "name";
     }
 }

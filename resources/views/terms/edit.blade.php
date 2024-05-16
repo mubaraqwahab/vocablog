@@ -18,7 +18,7 @@
     <div class="FormGroup">
       <label for="term" class="Label Label-text">Term *</label>
       <input
-        type="text" id="term" name="term" value="{{ old('term', $term->term) }}"
+        type="text" id="term" name="term" value="{{ old('term', $term->name) }}"
         required autocapitalize="off"
         class="FormControl"
       />
@@ -53,11 +53,11 @@
         <template x-for="(def, i) in defs" hidden>
           <li class="mb-5 space-y-5">
             <div class="FormGroup">
-              <label x-bind:for="`definition-${i}`" class="Label Label-text">Definition *</label>
+              <label x-bind:for="`def-${i}`" class="Label Label-text">Definition *</label>
               <textarea
-                x-bind:name="`defs[${i}][definition]`"
-                x-bind:id="`definition-${i}`"
-                x-model="def.definition"
+                x-bind:name="`defs[${i}][text]`"
+                x-bind:id="`def-${i}`"
+                x-model="def.text"
                 x-on:keydown.enter.prevent
                 x-init="() => {
                   if (newlyAddedThing === 'definition' && i === defs.length - 1) {

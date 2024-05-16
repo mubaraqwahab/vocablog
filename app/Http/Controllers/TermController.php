@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
 
 function uniqueTermRule()
 {
-    return Rule::unique("terms")->where(function (Builder $query) {
+    return Rule::unique("terms", "name")->where(function (Builder $query) {
         $request = request();
         return $query
             ->where("owner_id", $request->user()->id)
@@ -63,7 +63,7 @@ class TermController extends Controller
                 "term" => ["required", "max:255", uniqueTermRule()],
                 "lang" => ["required", "exists:langs,id"],
                 "defs" => ["required", "array", "min:1"],
-                "defs.*.definition" => ["required", "max:255"],
+                "defs.*.text" => ["required", "max:255"],
                 "defs.*.examples" => ["array", "max:3"],
                 "defs.*.examples.*" => ["required", "max:255"],
                 "defs.*.comment" => ["max:255"],
@@ -73,14 +73,14 @@ class TermController extends Controller
 
         DB::transaction(function () use ($validated, $request) {
             $term = new Term();
-            $term->term = $validated["term"];
+            $term->name = $validated["term"];
             $term->lang_id = $validated["lang"];
             $term->owner_id = $request->user()->id;
             $term->save();
 
             foreach ($validated["defs"] as $validatedDef) {
                 $def = new Definition();
-                $def->definition = $validatedDef["definition"];
+                $def->text = $validatedDef["text"];
                 $def->comment = $validatedDef["comment"];
                 $def->term_id = $term->id;
                 $def->save();
@@ -88,7 +88,7 @@ class TermController extends Controller
                 $validatedDef["examples"] ??= [];
                 foreach ($validatedDef["examples"] as $validatedExample) {
                     $example = new Example();
-                    $example->example = $validatedExample;
+                    $example->text = $validatedExample;
                     $example->definition_id = $def->id;
                     $example->save();
                 }
@@ -106,7 +106,7 @@ class TermController extends Controller
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $term->load("definitions.examples");
-        return view("terms.show", ["term" => $term]);
+        return view("terms.show", ["term" => $term, "lang" => $lang]);
     }
 
     public function edit(Lang $lang, Term $term)
@@ -116,14 +116,12 @@ class TermController extends Controller
         $term->load("definitions.examples");
         $langs = Lang::query()->orderBy("name", "asc")->get();
 
-        $emptyDef = ["definition" => "", "examples" => [], "comment" => ""];
+        $emptyDef = ["text" => "", "examples" => [], "comment" => ""];
         $defs = $term->definitions->map(function ($def) {
             return [
-                "definition" => $def->definition,
+                "text" => $def->text,
+                "examples" => $def->examples->map(fn($ex) => $ex->text),
                 "comment" => $def->comment,
-                "examples" => $def->examples->map(function ($ex) {
-                    return $ex->example;
-                }),
             ];
         });
 
@@ -148,7 +146,7 @@ class TermController extends Controller
                 ],
                 "lang" => ["required", "exists:langs,id"],
                 "defs" => ["required", "array", "min:1"],
-                "defs.*.definition" => ["required", "max:255"],
+                "defs.*.text" => ["required", "max:255"],
                 "defs.*.examples" => ["array", "max:3"],
                 "defs.*.examples.*" => ["required", "max:255"],
                 "defs.*.comment" => ["max:255"],
@@ -157,21 +155,20 @@ class TermController extends Controller
         );
 
         DB::transaction(function () use ($validated, $term) {
-            $term->term = $validated["term"];
+            $term->name = $validated["term"];
             $term->lang_id = $validated["lang"];
-            // If a only def or example is updated, let the time reflect on the term too.
+            // If only a def or example is updated, let the time reflect on the term.
             // (Laravel won't update the DB if the model isn't dirty.)
             $term->updated_at = now();
             $term->save();
 
-            // TODO: consider using a JSON array for the defs.
             Definition::query()
                 ->where("term_id", $term->id)
                 ->delete();
 
             foreach ($validated["defs"] as $validatedDef) {
                 $def = new Definition();
-                $def->definition = $validatedDef["definition"];
+                $def->text = $validatedDef["text"];
                 $def->comment = $validatedDef["comment"];
                 $def->term_id = $term->id;
                 $def->save();
@@ -179,7 +176,7 @@ class TermController extends Controller
                 $validatedDef["examples"] ??= [];
                 foreach ($validatedDef["examples"] as $validatedExample) {
                     $example = new Example();
-                    $example->example = $validatedExample;
+                    $example->text = $validatedExample;
                     $example->definition_id = $def->id;
                     $example->save();
                 }
