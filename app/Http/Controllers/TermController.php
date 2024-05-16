@@ -11,17 +11,8 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
-function uniqueTermRule()
-{
-    return Rule::unique("terms", "name")->where(function (Builder $query) {
-        $request = request();
-        return $query
-            ->where("owner_id", $request->user()->id)
-            ->where("lang_id", $request->input("lang"));
-    });
-}
 
 class TermController extends Controller
 {
@@ -32,7 +23,7 @@ class TermController extends Controller
     {
         $terms = Term::query()
             ->withCount("definitions")
-            ->whereBelongsTo($request->user(), "owner")
+            ->where("owner_id", $request->user()->id)
             ->latest("updated_at")
             ->paginate();
 
@@ -58,18 +49,7 @@ class TermController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate(
-            [
-                "term" => ["required", "max:255", uniqueTermRule()],
-                "lang" => ["required", "exists:langs,id"],
-                "defs" => ["required", "array", "min:1"],
-                "defs.*.text" => ["required", "max:255"],
-                "defs.*.examples" => ["array", "max:3"],
-                "defs.*.examples.*" => ["required", "max:255"],
-                "defs.*.comment" => ["max:255"],
-            ],
-            ["term.unique" => "You already have this term in your Vocablog."]
-        );
+        $validated = $this->validator($request->input())->validate();
 
         DB::transaction(function () use ($validated, $request) {
             $term = new Term();
@@ -78,21 +58,7 @@ class TermController extends Controller
             $term->owner_id = $request->user()->id;
             $term->save();
 
-            foreach ($validated["defs"] as $validatedDef) {
-                $def = new Definition();
-                $def->text = $validatedDef["text"];
-                $def->comment = $validatedDef["comment"];
-                $def->term_id = $term->id;
-                $def->save();
-
-                $validatedDef["examples"] ??= [];
-                foreach ($validatedDef["examples"] as $validatedExample) {
-                    $example = new Example();
-                    $example->text = $validatedExample;
-                    $example->definition_id = $def->id;
-                    $example->save();
-                }
-            }
+            $this->saveDefs($term->id, $validated["defs"]);
         });
 
         return redirect(rroute("terms.index"));
@@ -137,22 +103,7 @@ class TermController extends Controller
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
-        $validated = $request->validate(
-            [
-                "term" => [
-                    "required",
-                    "max:255",
-                    uniqueTermRule()->ignoreModel($term),
-                ],
-                "lang" => ["required", "exists:langs,id"],
-                "defs" => ["required", "array", "min:1"],
-                "defs.*.text" => ["required", "max:255"],
-                "defs.*.examples" => ["array", "max:3"],
-                "defs.*.examples.*" => ["required", "max:255"],
-                "defs.*.comment" => ["max:255"],
-            ],
-            ["term.unique" => "You already have this term in your Vocablog."]
-        );
+        $validated = $this->validator($request->input(), $term)->validate();
 
         DB::transaction(function () use ($validated, $term) {
             $term->name = $validated["term"];
@@ -162,25 +113,7 @@ class TermController extends Controller
             $term->updated_at = now();
             $term->save();
 
-            Definition::query()
-                ->where("term_id", $term->id)
-                ->delete();
-
-            foreach ($validated["defs"] as $validatedDef) {
-                $def = new Definition();
-                $def->text = $validatedDef["text"];
-                $def->comment = $validatedDef["comment"];
-                $def->term_id = $term->id;
-                $def->save();
-
-                $validatedDef["examples"] ??= [];
-                foreach ($validatedDef["examples"] as $validatedExample) {
-                    $example = new Example();
-                    $example->text = $validatedExample;
-                    $example->definition_id = $def->id;
-                    $example->save();
-                }
-            }
+            $this->saveDefs($term->id, $validated["defs"]);
         });
 
         return redirect(
@@ -197,5 +130,55 @@ class TermController extends Controller
 
         $term->delete();
         return redirect(rroute("terms.index"));
+    }
+
+    protected function validator(array $input, Term $term = null)
+    {
+        $uniqueTermRule = Rule::unique("terms", "name")->where(
+            fn(Builder $query) => $query
+                ->where("owner_id", request()->user()->id)
+                ->where("lang_id", request()->input("lang"))
+        );
+
+        $rules = [
+            "term" => [
+                "required",
+                "max:255",
+                $term ? $uniqueTermRule->ignoreModel($term) : $uniqueTermRule,
+            ],
+            "lang" => ["required", "exists:langs,id"],
+            "defs" => ["required", "array", "min:1"],
+            "defs.*.text" => ["required", "max:255"],
+            "defs.*.examples" => ["array", "max:3"],
+            "defs.*.examples.*" => ["required", "max:255"],
+            "defs.*.comment" => ["max:255"],
+        ];
+
+        $messages = [
+            "term.unique" => "You already have this term in your Vocablog.",
+        ];
+
+        return Validator::make($input, $rules, $messages);
+    }
+
+    protected function saveDefs(string $termId, array $rawDefs)
+    {
+        Definition::query()->where("term_id", $termId)->delete();
+
+        foreach ($rawDefs as $rawDef) {
+            $def = new Definition();
+            $def->text = $rawDef["text"];
+            $def->comment = $rawDef["comment"];
+            $def->term_id = $termId;
+            $def->save();
+
+            $rawDef["examples"] ??= [];
+            foreach ($rawDef["examples"] as $rawExample) {
+                $example = new Example();
+                $example->text = $rawExample;
+                $example->definition_id = $def->id;
+                $example->save();
+            }
+        }
     }
 }
