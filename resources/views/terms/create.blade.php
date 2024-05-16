@@ -56,11 +56,11 @@
         <template x-for="(def, i) in defs" hidden>
           <li class="mb-5 space-y-5">
             <div class="FormGroup">
-              <label x-bind:for="`definition-${i}`" class="Label Label-text">Definition *</label>
+              <label x-bind:for="`def-${i}`" class="Label Label-text">Definition *</label>
               <textarea
-                x-bind:name="`defs[${i}][definition]`"
-                x-bind:id="`definition-${i}`"
-                x-model="def.definition"
+                x-bind:name="`defs[${i}][text]`"
+                x-bind:id="`def-${i}`"
+                x-model="def.text"
                 x-on:keydown.enter.prevent
                 x-init="() => {
                   if (newlyAddedThing === 'definition' && i === defs.length - 1) {

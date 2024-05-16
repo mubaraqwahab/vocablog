@@ -13,7 +13,7 @@
         <li>
           <a href="{{ rroute('terms.show', ['term' => $term, 'lang' => $term->lang]) }}" class="flex items-baseline justify-between border rounded-md px-4 py-3 hover:bg-gray-50">
             <div class="flex items-baseline gap-4">
-              <strong class="text-lg">{{ $term->term }}</strong>
+              <strong class="text-lg">{{ $term->name }}</strong>
               <span class="text-sm text-gray-500">{{ $term->lang->name }}</span>
             </div>
             <span class="text-sm text-gray-500">{{ $term->definitions_count }} {{ Str::plural('definition', $term->definitions_count) }}</span>

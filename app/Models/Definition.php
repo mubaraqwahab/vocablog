@@ -11,6 +11,8 @@ class Definition extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     public function term(): BelongsTo
     {
         return $this->belongsTo(Term::class);

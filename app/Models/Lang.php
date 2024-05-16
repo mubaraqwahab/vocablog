@@ -25,7 +25,7 @@ class Lang extends Model
             return $this->terms()
                 ->getQuery()
                 ->whereBelongsTo(request()->user(), "owner")
-                ->where($field ?? "term", $value)
+                ->where($field ?? "name", $value)
                 ->firstOrFail();
         } else {
             return parent::resolveChildRouteBinding($childType, $value, $field);
