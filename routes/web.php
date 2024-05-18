@@ -21,7 +21,7 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::get("verify", [AuthController::class, "store"])
-    ->middleware(["loginlink", "throttle:6,1"])
+    ->middleware(["signed", "throttle:6,1"])
     ->name("verify");
 
 Route::middleware("auth")->group(function () {
