@@ -14,12 +14,13 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             "name" => ["required", "string", "max:255"],
+            "_intent" => ["string"],
         ]);
 
         $request->user()->name = $validated["name"];
         $request->user()->save();
 
-        return $request->routeIs("profile.complete")
+        return $validated["_intent"] === "complete"
             ? redirect(rroute("terms.index"))
             : redirect(rroute("profile.edit"))->with(
                 "status",

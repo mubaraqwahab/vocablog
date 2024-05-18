@@ -1,7 +1,8 @@
 <x-layout title="Complete your profile">
   <h1 class="PageHeading">Complete your profile</h1>
 
-  <x-form method="PATCH" action="{{ rroute('profile.update') }}" class="mt-6 space-y-5">
+  <x-form method="PATCH" action="{{ rroute('profile.update') }}" class="flex flex-col mt-6 gap-y-5">
+    <input type="hidden" name="_intent" value="complete">
     <div class="FormGroup">
       <label for="name" class="Label Label-text">What's your name?</label>
       <input
