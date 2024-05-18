@@ -29,6 +29,8 @@ class AuthController extends Controller
             parameters: ["email" => $email, "intended" => $intended]
         );
 
+        dd($signedUrl);
+
         if (app()->environment() === "production") {
             $signedUrl = str_replace("http://", "https://", $signedUrl);
         }
