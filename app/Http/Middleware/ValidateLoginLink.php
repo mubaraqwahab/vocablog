@@ -21,9 +21,17 @@ class ValidateLoginLink
             throw new InvalidSignatureException();
         }
 
+        dump($request, $request->fullUrl());
+
+        $allLinks = DB::table("login_links")->get(["url"]);
+        dump($allLinks);
+
         $count = DB::table("login_links")
             ->where("url", $request->fullUrl())
+            ->dumpRawSql()
             ->delete();
+
+        dump($count);
 
         if ($count) {
             return $next($request);
