@@ -29,6 +29,7 @@ class AuthController extends Controller
             parameters: ["email" => $email, "intended" => $intended]
         );
 
+        // TODO: fix this http(s) issue once and for all!
         if (app()->environment() === "production") {
             $signedUrl = str_replace("http://", "https://", $signedUrl);
         }

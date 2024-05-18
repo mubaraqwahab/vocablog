@@ -5,7 +5,7 @@
 Log in
 </x-mail::button>
 
-The link expires in 30 minutes or after it's used once.
+The link expires in 30 minutes.
 
 If you didn't request this email, you can safely ignore it.
 </x-mail::message>

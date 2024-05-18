@@ -12,6 +12,7 @@ Route::get("/", function () {
 Route::middleware("guest")->group(function () {
     Route::view("login", "login")->name("login");
 
+    // TODO: throttle this?
     Route::post("login", [AuthController::class, "sendLoginLink"]);
 
     Route::view("check-your-email", "check-your-email")->name(
