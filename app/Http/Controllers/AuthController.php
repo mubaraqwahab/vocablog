@@ -35,7 +35,7 @@ class AuthController extends Controller
 
         DB::table("login_links")->insert(["url" => $signedUrl]);
 
-        Mail::to($email)->queue(new LoginLink($signedUrl));
+        Mail::to($email)->sendNow(new LoginLink($signedUrl));
 
         return redirect(rroute("check-your-email"));
     }
