@@ -1,5 +1,5 @@
 <x-layout title="Log in">
-  <h1 class="PageHeading">Log in to Vocablog</h1>
+  <h1 class="PageHeading">Log in to {{ config('app.name') }}</h1>
   <x-form method="POST" action="{{ rroute('login') }}" class="mt-6">
     <div class="FormGroup mb-5">
       <label for="email" class="Label Label-text">Email</label>

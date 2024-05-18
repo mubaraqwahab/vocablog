@@ -140,7 +140,7 @@ class TermController extends Controller
         ];
 
         $messages = [
-            "term.unique" => "You already have this term in your Vocablog.",
+            "term.unique" => "You already have this term.",
         ];
 
         return Validator::make($input, $rules, $messages);

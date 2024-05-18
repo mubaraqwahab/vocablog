@@ -60,3 +60,15 @@ Route::middleware(["auth", "verified"])->group(function () {
         "store",
     ]);
 });
+
+Route::get("/dev/mail/{name}", function (string $name) {
+    if (app()->environment() === "production") {
+        abort(404);
+    }
+
+    /** @var \Illuminate\Mail\Mailable */
+    $mailable = app("App\\Mail\\{$name}", ["url" => request()->fullUrl()]);
+    $mailable->to("test@example.com");
+
+    return $mailable;
+});

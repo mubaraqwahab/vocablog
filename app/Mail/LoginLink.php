@@ -12,30 +12,22 @@ class LoginLink extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct(protected string $url)
     {
         //
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Log in to Vocablog");
+        return new Envelope(subject: "Log in to " . config("app.name"));
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
+        $recipient = $this->to[0];
         return new Content(
-            view: "mail.login-link",
-            with: ["url" => $this->url]
+            markdown: "mail.login-link",
+            with: ["url" => $this->url, "email" => $recipient["address"]]
         );
     }
 

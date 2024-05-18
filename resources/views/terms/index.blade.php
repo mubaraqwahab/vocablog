@@ -24,7 +24,7 @@
 
     {{ $terms->links('partials.pagination') }}
   @else
-    <p class="mb-3">You don't have any terms in your Vocablog.</p>
+    <p class="mb-3">You don't have any terms in your {{ config('app.name') }}.</p>
     <a href="{{ rroute('terms.create') }}" class="Button Button--primary">Add a new term</a>
   @endif
 </x-layout>
