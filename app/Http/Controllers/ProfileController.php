@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class ProfileController extends Controller
 {
@@ -20,7 +21,7 @@ class ProfileController extends Controller
         $request->user()->name = $validated["name"];
         $request->user()->save();
 
-        return $validated["_intent"] === "complete"
+        return Arr::get($validated, "_intent") === "complete"
             ? redirect(rroute("terms.index"))
             : redirect(rroute("profile.edit"))->with(
                 "status",
