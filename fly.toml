@@ -38,9 +38,16 @@ console_command = 'php /var/www/html/artisan tinker'
 
 [processes]
   app = ''
+  cron = 'cron -f'
 
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
   processes = ['app']
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
+  processes = ['cron']
