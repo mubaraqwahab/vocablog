@@ -16,9 +16,6 @@ use Illuminate\Validation\Rule;
 
 class TermController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $terms = Term::query()
@@ -30,9 +27,6 @@ class TermController extends Controller
         return view("terms.index", ["terms" => $terms]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $langs = Lang::query()->orderBy("name", "asc")->get();
@@ -44,9 +38,6 @@ class TermController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $this->validator($request->input())->validate();
@@ -64,9 +55,6 @@ class TermController extends Controller
         return redirect(rroute("terms.index"));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Lang $lang, Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
@@ -121,9 +109,6 @@ class TermController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Lang $lang, Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));

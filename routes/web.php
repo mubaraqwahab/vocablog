@@ -17,11 +17,11 @@ Route::middleware("guest")->group(function () {
     Route::view("check-your-email", "check-your-email")->name(
         "check-your-email"
     );
-
-    Route::get("verify", [AuthController::class, "store"])
-        ->middleware(["signed", "throttle:6,1"])
-        ->name("verify");
 });
+
+Route::get("verify", [AuthController::class, "store"])
+    ->middleware(["loginlink", "throttle:6,1"])
+    ->name("verify");
 
 Route::middleware("auth")->group(function () {
     Route::view("profile", "profile")->name("profile.edit");

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
@@ -32,15 +33,13 @@ class AuthController extends Controller
             $signedUrl = str_replace("http://", "https://", $signedUrl);
         }
 
+        DB::table("login_links")->insert(["url" => $signedUrl]);
+
         Mail::to($email)->queue(new LoginLink($signedUrl));
-        // TODO: what to do if email fails?
 
         return redirect(rroute("check-your-email"));
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(Request $request): RedirectResponse
     {
         $email = $request->query("email");
@@ -61,9 +60,6 @@ class AuthController extends Controller
             : redirect()->intended(rroute("terms.index"));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard("web")->logout();

@@ -8,9 +8,6 @@ use Illuminate\Support\Arr;
 
 class ProfileController extends Controller
 {
-    /**
-     * Update the user's profile information.
-     */
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
