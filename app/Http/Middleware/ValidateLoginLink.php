@@ -26,8 +26,13 @@ class ValidateLoginLink
         $allLinks = DB::table("login_links")->get(["url"]);
         dump($allLinks);
 
+        $url = $request->fullUrl();
+        if (app()->environment() === "production") {
+            $url = str_replace("http://", "https://", $url);
+        }
+
         $count = DB::table("login_links")
-            ->where("url", $request->fullUrl())
+            ->where("url", $url)
             ->dumpRawSql()
             ->delete();
 
