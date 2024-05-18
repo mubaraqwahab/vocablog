@@ -32,7 +32,7 @@ class AuthController extends Controller
             $signedUrl = str_replace("http://", "https://", $signedUrl);
         }
 
-        Mail::to($email)->sendNow(new LoginLink($signedUrl));
+        Mail::to($email)->queue(new LoginLink($signedUrl));
         // TODO: what to do if email fails?
 
         return redirect(rroute("check-your-email"));
