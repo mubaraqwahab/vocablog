@@ -38,7 +38,6 @@ console_command = 'php /var/www/html/artisan tinker'
 
 [processes]
   app = ''
-  cron = 'cron -f'
   worker = 'php artisan queue:listen'
 
 [[vm]]
@@ -51,5 +50,5 @@ console_command = 'php /var/www/html/artisan tinker'
   memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1
-  processes = ['cron', 'worker']
+  processes = ['worker']
 
