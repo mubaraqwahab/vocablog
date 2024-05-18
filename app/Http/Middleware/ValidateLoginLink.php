@@ -27,6 +27,7 @@ class ValidateLoginLink
         dump($allLinks);
 
         $url = $request->fullUrl();
+        // TODO: find a way to resolve this http(s) issue everywhere!
         if (app()->environment() === "production") {
             $url = str_replace("http://", "https://", $url);
         }
