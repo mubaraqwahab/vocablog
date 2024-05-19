@@ -41,6 +41,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function terms(): HasMany
     {
-        return $this->hasMany(Term::class);
+        return $this->hasMany(Term::class, "owner_id");
     }
 }
