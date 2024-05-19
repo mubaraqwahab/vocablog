@@ -1,6 +1,16 @@
 <x-layout title="My vocabulary">
   <h1 class="PageHeading">My vocabulary</h1>
 
+  @if (session('status') === 'term-deleted')
+    <div
+      x-data="{ open: true }" x-show="open"
+      class="flex justify-between items-center mb-4 border border-green-300 bg-green-100 text-green-700 rounded px-4 py-2"
+    >
+      <p>Term deleted</p>
+      <button type="button" x-on:click="open = false;">Dismiss</button>
+    </div>
+  @endif
+
   @if ($terms->count())
     <a href="{{ rroute('terms.create') }}" class="Button Button--primary mb-4">New term</a>
 

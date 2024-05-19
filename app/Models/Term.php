@@ -25,7 +25,7 @@ class Term extends Model
 
     public function definitions(): HasMany
     {
-        return $this->hasMany(Definition::class);
+        return $this->hasMany(Definition::class)->orderBy("id");
     }
 
     public function getRouteKeyName()

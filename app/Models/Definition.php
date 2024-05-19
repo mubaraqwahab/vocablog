@@ -10,9 +10,7 @@ class Definition extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
-    protected $fillable = ["text", "num", "comment", "examples"];
+    protected $fillable = ["text", "comment", "examples"];
 
     protected function casts()
     {

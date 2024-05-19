@@ -12,13 +12,6 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table("definitions", function (Blueprint $table) {
-            $table
-                ->unsignedBigInteger("num")
-                ->nullable()
-                ->comment(
-                    "The serial number of the definition within it's associated term"
-                );
-            $table->unique(["term_id", "num"]);
             $table->jsonb("examples")->default("[]");
         });
 
@@ -34,7 +27,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table("definitions", function (Blueprint $table) {
-            $table->dropColumn(["num", "examples"]);
+            $table->dropColumn(["examples"]);
         });
     }
 };

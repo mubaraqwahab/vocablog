@@ -52,6 +52,8 @@
       <ol class="pl-6 list-decimal">
         <template x-for="(def, i) in defs" hidden>
           <li class="mb-5 space-y-5">
+            <input type="hidden" x-bind:name="`defs[${i}][id]`" x-model="def.id" />
+
             <div class="FormGroup">
               <label x-bind:for="`def-${i}`" class="Label Label-text">Definition *</label>
               <textarea

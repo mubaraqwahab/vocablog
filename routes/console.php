@@ -41,3 +41,15 @@ Artisan::command("migdata:defs_num", function () {
         }
     }
 })->purpose("Add indices to definitions.");
+
+Artisan::command("migdata:created_at", function () {
+    $defs = Definition::query()
+        ->with(["term"])
+        ->whereNull("created_at")
+        ->get();
+
+    foreach ($defs as $def) {
+        $def->created_at = $def->term->created_at;
+        $def->save();
+    }
+})->purpose("Set the created_at for definitions where it's with missing");
