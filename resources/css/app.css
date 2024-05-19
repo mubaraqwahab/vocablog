@@ -44,6 +44,10 @@
     @apply flex flex-col gap-y-1.5;
   }
 
+  .FormGroup--horizontal {
+    @apply flex-row gap-x-2 gap-y-0;
+  }
+
   .Label {
     @apply flex flex-col leading-tight;
   }

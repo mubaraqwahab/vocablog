@@ -16,7 +16,7 @@
             <div class="absolute top-full right-0 w-40 border p-2 bg-white mt-2 shadow">
               <ul>
                 <li>
-                  <a href="{{ rroute('profile.edit') }}" class="block px-3 py-2 underline">Profile</a>
+                  <a href="{{ rroute('settings.edit') }}" class="block px-3 py-2 underline">Settings</a>
                 </li>
                 <li>
                   <x-form method="POST" action="{{ rroute('logout') }}">

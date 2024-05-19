@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CompleteProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TermController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,15 +26,23 @@ Route::get("verify", [AuthController::class, "store"])
     ->name("verify");
 
 Route::middleware("auth")->group(function () {
-    Route::view("profile", "profile")->name("profile.edit");
-
-    Route::patch("profile", [ProfileController::class, "update"])->name(
-        "profile.update"
+    Route::get("settings", [SettingsController::class, "edit"])->name(
+        "settings.edit"
     );
 
-    Route::view("complete-profile", "complete-profile")->name(
-        "profile.complete"
+    Route::patch("settings", [SettingsController::class, "update"])->name(
+        "settings.update"
     );
+
+    Route::get("complete-profile", [
+        CompleteProfileController::class,
+        "edit",
+    ])->name("complete-profile.edit");
+
+    Route::patch("complete-profile", [
+        CompleteProfileController::class,
+        "update",
+    ])->name("complete-profile.update");
 
     Route::post("logout", [AuthController::class, "destroy"])->name("logout");
 });

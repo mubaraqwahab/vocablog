@@ -9,6 +9,7 @@ use App\Models\Term;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -153,7 +154,7 @@ class TermController extends Controller
         foreach ($rawDefs as $rawDef) {
             $def = new Definition();
             $def->text = $rawDef["text"];
-            $def->comment = $rawDef["comment"];
+            $def->comment = Arr::get($rawDef, "comment");
             $def->term_id = $termId;
             $def->save();
 
