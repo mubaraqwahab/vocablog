@@ -86,10 +86,7 @@ class TermController extends Controller
         ];
 
         $defs = $term->definitions->map(
-            fn(Definition $def) => Arr::only(
-                $def->toArray(),
-                array_keys($emptyDef)
-            )
+            fn(Definition $def) => Arr::only($def->toArray(), array_keys($emptyDef))
         );
 
         return view("terms.edit", [
@@ -143,9 +140,7 @@ class TermController extends Controller
             $term->save();
         });
 
-        return redirect(
-            rroute("terms.show", ["term" => $term, "lang" => $lang])
-        );
+        return redirect(rroute("terms.show", ["term" => $term, "lang" => $lang]));
     }
 
     public function destroy(Lang $lang, Term $term)
@@ -177,9 +172,7 @@ class TermController extends Controller
             ],
             "lang" => ["required", "exists:langs,id"],
             "defs" => ["required", "array", "min:1"],
-            ...$term
-                ? ["defs.*.id" => ["nullable", "integer", $existingDefRule]]
-                : [],
+            ...$term ? ["defs.*.id" => ["nullable", "integer", $existingDefRule]] : [],
             "defs.*.text" => ["required", "max:255"],
             "defs.*.examples" => ["array", "max:3"],
             "defs.*.examples.*" => ["required", "max:255"],

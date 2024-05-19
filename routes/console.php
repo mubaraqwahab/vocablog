@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Term;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Inspiring;
@@ -18,16 +17,8 @@ Artisan::command("digest", function () {
                 $relation
                     ->getQuery()
                     ->with(["definitions"])
-                    ->join(
-                        "definitions",
-                        "definitions.term_id",
-                        "=",
-                        "terms.id"
-                    )
-                    ->whereBetween("definitions.created_at", [
-                        now()->addWeeks(-1),
-                        now(),
-                    ])
+                    ->join("definitions", "definitions.term_id", "=", "terms.id")
+                    ->whereBetween("definitions.created_at", [now()->addWeeks(-1), now()])
                     ->orderBy("definitions.created_at")
                     ->select(["terms.*"]);
             },

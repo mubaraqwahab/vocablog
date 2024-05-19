@@ -13,10 +13,7 @@ return new class extends Migration {
         Schema::create("examples", function (Blueprint $table) {
             $table->id();
             $table->string("example");
-            $table
-                ->foreignId("definition_id")
-                ->constrained()
-                ->cascadeOnDelete();
+            $table->foreignId("definition_id")->constrained()->cascadeOnDelete();
         });
     }
 

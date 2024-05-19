@@ -28,11 +28,7 @@ return new class extends Migration {
         DB::statement("drop sequence if exists langs_id_seq");
 
         Schema::table("terms", function (Blueprint $table) {
-            $table
-                ->foreign("lang_id")
-                ->references("id")
-                ->on("langs")
-                ->cascadeOnUpdate();
+            $table->foreign("lang_id")->references("id")->on("langs")->cascadeOnUpdate();
         });
     }
 

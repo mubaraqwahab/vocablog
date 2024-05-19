@@ -16,9 +16,7 @@ Route::middleware("guest")->group(function () {
     // TODO: throttle this?
     Route::post("login", [AuthController::class, "sendLoginLink"]);
 
-    Route::view("check-your-email", "check-your-email")->name(
-        "check-your-email"
-    );
+    Route::view("check-your-email", "check-your-email")->name("check-your-email");
 });
 
 Route::get("verify", [AuthController::class, "store"])
@@ -26,23 +24,19 @@ Route::get("verify", [AuthController::class, "store"])
     ->name("verify");
 
 Route::middleware("auth")->group(function () {
-    Route::get("settings", [SettingsController::class, "edit"])->name(
-        "settings.edit"
-    );
+    Route::get("settings", [SettingsController::class, "edit"])->name("settings.edit");
 
     Route::patch("settings", [SettingsController::class, "update"])->name(
         "settings.update"
     );
 
-    Route::get("complete-profile", [
-        CompleteProfileController::class,
-        "edit",
-    ])->name("complete-profile.edit");
+    Route::get("complete-profile", [CompleteProfileController::class, "edit"])->name(
+        "complete-profile.edit"
+    );
 
-    Route::patch("complete-profile", [
-        CompleteProfileController::class,
-        "update",
-    ])->name("complete-profile.update");
+    Route::patch("complete-profile", [CompleteProfileController::class, "update"])->name(
+        "complete-profile.update"
+    );
 
     Route::post("logout", [AuthController::class, "destroy"])->name("logout");
 });
@@ -64,11 +58,7 @@ Route::middleware(["auth", "verified"])->group(function () {
         ->name("terms.destroy")
         ->scopeBindings();
 
-    Route::resource("terms", TermController::class)->only([
-        "index",
-        "create",
-        "store",
-    ]);
+    Route::resource("terms", TermController::class)->only(["index", "create", "store"]);
 });
 
 Route::get("/dev/mail/{name}", function (string $name) {
