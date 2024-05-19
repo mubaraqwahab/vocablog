@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Definition;
-use App\Models\Example;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
@@ -31,7 +30,7 @@ class TermController extends Controller
     public function create()
     {
         $langs = Lang::query()->orderBy("name", "asc")->get();
-        $emptyDef = ["definition" => "", "examples" => [], "comment" => ""];
+        $emptyDef = ["text" => "", "examples" => [], "comment" => ""];
 
         return view("terms.create", [
             "langs" => $langs,
@@ -60,7 +59,7 @@ class TermController extends Controller
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
-        $term->load("definitions.examples");
+        $term->load("definitions");
         return view("terms.show", ["term" => $term, "lang" => $lang]);
     }
 
@@ -68,16 +67,13 @@ class TermController extends Controller
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
-        $term->load("definitions.examples");
+        $term->load("definitions");
         $langs = Lang::query()->orderBy("name", "asc")->get();
 
         $emptyDef = ["text" => "", "examples" => [], "comment" => ""];
-        $defs = $term->definitions->map(function ($def) {
-            return [
-                "text" => $def->text,
-                "examples" => $def->examples->map(fn($ex) => $ex->text),
-                "comment" => $def->comment,
-            ];
+
+        $defs = $term->definitions->map(function (Definition $def) {
+            return Arr::only($def->toArray(), ["text", "examples", "comment"]);
         });
 
         return view("terms.edit", [
@@ -97,6 +93,7 @@ class TermController extends Controller
         DB::transaction(function () use ($validated, $term) {
             $term->name = $validated["term"];
             $term->lang_id = $validated["lang"];
+
             // If only a def or example is updated, let the time reflect on the term.
             // (Laravel won't update the DB if the model isn't dirty.)
             $term->touch();
@@ -150,31 +147,22 @@ class TermController extends Controller
 
     protected function saveDefs(Term $term, array $rawDefs)
     {
-        // Definition::query()->where("term_id", $termId)->delete();
-
-        foreach ($rawDefs as $rawDef) {
+        foreach ($rawDefs as $i => $rawDef) {
             $term->definitions()->updateOrCreate(
-                ["serial_num" => $rawDef["serial_num"]],
+                ["num" => $i],
                 [
+                    "num" => $i,
                     "text" => $rawDef["text"],
                     "comment" => Arr::get($rawDef, "comment"),
-                    "serial_num" => $rawDef["serial_num"],
+                    "examples" => ($rawDef["examples"] ??= []),
                 ]
             );
-
-            $def = new Definition();
-            $def->text = $rawDef["text"];
-            $def->comment = Arr::get($rawDef, "comment");
-            $def->term_id = $term->id;
-            $def->save();
-
-            $rawDef["examples"] ??= [];
-            foreach ($rawDef["examples"] as $rawExample) {
-                $example = new Example();
-                $example->text = $rawExample;
-                $example->definition_id = $def->id;
-                $example->save();
-            }
         }
+
+        $term
+            ->definitions()
+            ->getQuery()
+            ->whereNotIn("index", Arr::map($rawDefs, fn($_, $i) => $i))
+            ->delete();
     }
 }

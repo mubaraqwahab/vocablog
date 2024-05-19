@@ -9,8 +9,8 @@
         @if (count($def->examples))
           <strong class="inline-block mt-2">Examples</strong>
           <ul class="pl-6 italic list-disc">
-            @foreach ($def->examples as $e)
-              <li>{{ $e->text }}</li>
+            @foreach ($def->examples as $example)
+              <li>{{ $example }}</li>
             @endforeach
           </ul>
         @endif
