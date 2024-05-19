@@ -50,7 +50,7 @@ class TermController extends Controller
             $term->owner_id = $request->user()->id;
             $term->save();
 
-            $this->saveDefs($term->id, $validated["defs"]);
+            $this->saveDefs($term, $validated["defs"]);
         });
 
         return redirect(rroute("terms.index"));
@@ -99,10 +99,10 @@ class TermController extends Controller
             $term->lang_id = $validated["lang"];
             // If only a def or example is updated, let the time reflect on the term.
             // (Laravel won't update the DB if the model isn't dirty.)
-            $term->updated_at = now();
+            $term->touch();
             $term->save();
 
-            $this->saveDefs($term->id, $validated["defs"]);
+            $this->saveDefs($term, $validated["defs"]);
         });
 
         return redirect(
@@ -115,6 +115,7 @@ class TermController extends Controller
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $term->delete();
+
         return redirect(rroute("terms.index"));
     }
 
@@ -147,15 +148,24 @@ class TermController extends Controller
         return Validator::make($input, $rules, $messages);
     }
 
-    protected function saveDefs(string $termId, array $rawDefs)
+    protected function saveDefs(Term $term, array $rawDefs)
     {
-        Definition::query()->where("term_id", $termId)->delete();
+        // Definition::query()->where("term_id", $termId)->delete();
 
         foreach ($rawDefs as $rawDef) {
+            $term->definitions()->updateOrCreate(
+                ["serial_num" => $rawDef["serial_num"]],
+                [
+                    "text" => $rawDef["text"],
+                    "comment" => Arr::get($rawDef, "comment"),
+                    "serial_num" => $rawDef["serial_num"],
+                ]
+            );
+
             $def = new Definition();
             $def->text = $rawDef["text"];
             $def->comment = Arr::get($rawDef, "comment");
-            $def->term_id = $termId;
+            $def->term_id = $term->id;
             $def->save();
 
             $rawDef["examples"] ??= [];
