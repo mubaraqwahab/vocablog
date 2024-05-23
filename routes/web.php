@@ -61,14 +61,27 @@ Route::middleware(["auth", "verified"])->group(function () {
     Route::resource("terms", TermController::class)->only(["index", "create", "store"]);
 });
 
-Route::get("/dev/mail/{name}", function (string $name) {
-    if (app()->environment() === "production") {
-        abort(404);
-    }
+Route::prefix("dev")->group(function () {
+    Route::get("/mail/{name}", function (string $name) {
+        if (app()->environment() === "production") {
+            abort(404);
+        }
 
-    /** @var \Illuminate\Mail\Mailable */
-    $mailable = app("App\\Mail\\{$name}", ["url" => request()->fullUrl()]);
-    $mailable->to("test@example.com");
+        /** @var \Illuminate\Mail\Mailable */
+        $mailable = app("App\\Mail\\{$name}", ["url" => request()->fullUrl()]);
+        $mailable->to("test@example.com");
 
-    return $mailable;
+        return $mailable;
+    });
+
+    Route::get("/notification/{name}", function (string $name) {
+        if (app()->environment() === "production") {
+            abort(404);
+        }
+
+        /** @var Illuminate\Notifications\Notification; */
+        $mailable = app("App\\Notifications\\{$name}")->toMail(request()->user());
+
+        return $mailable;
+    });
 });
