@@ -79,7 +79,7 @@ Route::prefix("dev")->group(function () {
             abort(404);
         }
 
-        /** @var Illuminate\Notifications\Notification; */
+        /** @var \Illuminate\Mail\Mailable */
         $mailable = app("App\\Notifications\\{$name}")->toMail(request()->user());
 
         return $mailable;

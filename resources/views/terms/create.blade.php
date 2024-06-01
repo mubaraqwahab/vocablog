@@ -22,7 +22,7 @@
       </label>
       <input
         type="text" id="term" name="term" value="{{ old('term') }}"
-        required autocapitalize="off"
+        required autocapitalize="off" autofocus
         class="FormControl"
       />
     </div>

@@ -1,4 +1,4 @@
-<x-layout title="{{ $term->term }}">
+<x-layout title="{{ $term->name }}">
   <h1 class="PageHeading">{{ $term->name }}</h1>
   <p class="text-sm uppercase mb-5 text-gray-500">{{ $term->lang->name }}</p>
 

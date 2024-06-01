@@ -19,7 +19,7 @@
       <label for="term" class="Label Label-text">Term *</label>
       <input
         type="text" id="term" name="term" value="{{ old('term', $term->name) }}"
-        required autocapitalize="off"
+        required autocapitalize="off" autofocus
         class="FormControl"
       />
     </div>
