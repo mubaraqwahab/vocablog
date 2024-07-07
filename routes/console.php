@@ -29,4 +29,5 @@ Artisan::command("app:send-digest", function () {
     }
 })
     ->purpose("Send a weekly digest to all users")
-    ->weeklyOn(Schedule::SUNDAY, "12:00");
+    ->weeklyOn(Schedule::SUNDAY, "17:45")
+    ->timezone("Africa/Lagos");
