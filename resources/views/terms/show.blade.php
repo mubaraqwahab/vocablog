@@ -25,7 +25,7 @@
   <hr class="my-8">
 
   <div class="flex gap-3" x-data>
-    <a href="{{ rroute('terms.edit', ['term' => $term, 'lang' => $term->lang]) }}" class="Button Button--secondary">Edit term</a>
+    <a href="{{ rroute('terms.edit', ['term' => $term]) }}" class="Button Button--secondary">Edit term</a>
 
     <button type="button" x-on:click="$refs.deleteTermDialog.showModal()" class="Button Button--danger">Delete term</button>
     <dialog
@@ -36,7 +36,7 @@
       <p class="mb-5">Are you sure you want to delete this term?</p>
       <x-form
         method="DELETE"
-        action="{{ rroute('terms.destroy', ['term' => $term, 'lang' => $term->lang]) }}"
+        action="{{ rroute('terms.destroy', ['term' => $term]) }}"
         class="flex gap-3 justify-end"
       >
         <button type="submit" formmethod="dialog" class="Button Button--secondary">No, keep it</button>

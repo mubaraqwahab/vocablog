@@ -63,15 +63,15 @@ class TermController extends Controller
         return redirect(rroute("terms.index"));
     }
 
-    public function show(Lang $lang, Term $term)
+    public function show(Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
         $term->load("definitions");
-        return view("terms.show", ["term" => $term, "lang" => $lang]);
+        return view("terms.show", ["term" => $term]);
     }
 
-    public function edit(Lang $lang, Term $term)
+    public function edit(Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
@@ -97,7 +97,7 @@ class TermController extends Controller
         ]);
     }
 
-    public function update(Request $request, Lang $lang, Term $term)
+    public function update(Request $request, Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 
@@ -140,10 +140,10 @@ class TermController extends Controller
             $term->save();
         });
 
-        return redirect(rroute("terms.show", ["term" => $term, "lang" => $lang]));
+        return redirect(rroute("terms.show", ["term" => $term]));
     }
 
-    public function destroy(Lang $lang, Term $term)
+    public function destroy(Term $term)
     {
         Gate::allowIf(fn(User $user) => $user->is($term->owner));
 

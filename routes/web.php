@@ -42,23 +42,7 @@ Route::middleware("auth")->group(function () {
 });
 
 Route::middleware(["auth", "verified"])->group(function () {
-    Route::get("terms/{lang}/{term}", [TermController::class, "show"])
-        ->name("terms.show")
-        ->scopeBindings();
-
-    Route::get("terms/{lang}/{term}/edit", [TermController::class, "edit"])
-        ->name("terms.edit")
-        ->scopeBindings();
-
-    Route::put("terms/{lang}/{term}", [TermController::class, "update"])
-        ->name("terms.update")
-        ->scopeBindings();
-
-    Route::delete("terms/{lang}/{term}", [TermController::class, "destroy"])
-        ->name("terms.destroy")
-        ->scopeBindings();
-
-    Route::resource("terms", TermController::class)->only(["index", "create", "store"]);
+    Route::resource("terms", TermController::class);
 });
 
 Route::prefix("dev")->group(function () {

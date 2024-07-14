@@ -18,17 +18,4 @@ class Lang extends Model
     {
         return $this->hasMany(Term::class);
     }
-
-    public function resolveChildRouteBinding($childType, $value, $field)
-    {
-        if ($childType === "term") {
-            return $this->terms()
-                ->getQuery()
-                ->whereBelongsTo(request()->user(), "owner")
-                ->where($field ?? "name", $value)
-                ->firstOrFail();
-        } else {
-            return parent::resolveChildRouteBinding($childType, $value, $field);
-        }
-    }
 }

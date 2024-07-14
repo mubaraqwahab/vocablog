@@ -21,7 +21,7 @@
     <ul class="grid gap-4 mb-6">
       @foreach ($terms as $term)
         <li>
-          <a href="{{ rroute('terms.show', ['term' => $term, 'lang' => $term->lang]) }}" class="flex items-baseline justify-between border rounded-md px-4 py-3 hover:bg-gray-50">
+          <a href="{{ rroute('terms.show', ['term' => $term]) }}" class="flex items-baseline justify-between border rounded-md px-4 py-3 hover:bg-gray-50">
             <div class="flex items-baseline gap-4">
               <strong class="text-lg">{{ $term->name }}</strong>
               <span class="text-sm text-gray-500">{{ $term->lang->name }}</span>
