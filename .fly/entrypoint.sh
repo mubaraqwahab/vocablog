@@ -8,7 +8,8 @@ done
 chown -R www-data:www-data /var/www/html
 
 # Use printf instead of echo to avoid \n inconsistency. See https://stackoverflow.com/questions/8467424/echo-newline-in-bash-prints-literal-n
-printf "MAILTO=\"\"\n* * * * * www-data /usr/bin/php /var/www/html/artisan schedule:run" > /etc/cron.d/laravel
+# Note the trailing \n. This is required in cron.d files. See https://manpages.debian.org/bullseye/cron/crontab.5.en.html#DIAGNOSTICS
+printf "MAILTO=\"\"\n* * * * * www-data /usr/bin/php /var/www/html/artisan schedule:run\n" > /etc/cron.d/laravel
 
 if [ $# -gt 0 ]; then
     # If we passed a command, run it as root
