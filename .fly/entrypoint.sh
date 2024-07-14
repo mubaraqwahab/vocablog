@@ -7,8 +7,8 @@ for f in /var/www/html/.fly/scripts/*.sh; do
 done
 chown -R www-data:www-data /var/www/html
 
-# Us
-# printf "MAILTO=\"\"\n* * * * * www-data /usr/bin/php /var/www/html/artisan schedule:run" > /etc/cron.d/laravel
+# Use printf instead of echo to avoid \n inconsistency. See https://stackoverflow.com/questions/8467424/echo-newline-in-bash-prints-literal-n
+printf "MAILTO=\"\"\n* * * * * www-data /usr/bin/php /var/www/html/artisan schedule:run" > /etc/cron.d/laravel
 
 if [ $# -gt 0 ]; then
     # If we passed a command, run it as root
