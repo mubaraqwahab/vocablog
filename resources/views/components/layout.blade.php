@@ -6,7 +6,7 @@
     <title>{{ $title ? $title . ' | ' : '' }}{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
   </head>
-  <body class="text-gray-700">
+  <body class="text-gray-700 bg-white">
     <nav class="border-b">
       <div class="flex justify-between items-center container py-4 max-w-prose">
         <a href="/" class="font-bold">{{ config('app.name') }}</a>
