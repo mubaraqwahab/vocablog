@@ -15,7 +15,7 @@
     <a href="{{ rroute('terms.create') }}" class="Button Button--primary mb-4">New term</a>
 
     <p class="text-sm text-gray-500 mb-4">
-      Showing {{ $terms->count() }} out of {{ $terms->total() }} terms
+      Showing {{ $terms->firstItem() }} to {{ $terms->lastItem() }} of {{ $terms->total() }} terms
     </p>
 
     <ul class="grid gap-4 mb-6">
