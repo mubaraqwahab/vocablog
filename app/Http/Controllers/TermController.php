@@ -6,8 +6,8 @@ use App\Models\Definition;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
-/* use Illuminate\Database\Query\Builder; */
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as ElBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -25,10 +25,10 @@ class TermController extends Controller
         $terms = Term::query()
             ->withCount("definitions")
             ->where("owner_id", $request->user()->id)
-            ->when($termQuery !== null, function (Builder $query) use ($termQuery) {
+            ->when($termQuery !== null, function (ElBuilder $query) use ($termQuery) {
                 $query->where("name", "ilike", "%{$termQuery}%");
             })
-            ->when($langQuery !== null, function (Builder $query) use ($langQuery) {
+            ->when($langQuery !== null, function (ElBuilder $query) use ($langQuery) {
                 $query->where("lang_id", $langQuery);
             })
             ->latest("updated_at")
