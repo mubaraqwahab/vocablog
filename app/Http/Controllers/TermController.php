@@ -7,6 +7,7 @@ use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as ElBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -18,13 +19,31 @@ class TermController extends Controller
 {
     public function index(Request $request)
     {
+        $termQuery = $request->query("term");
+        $langQuery = $request->query("lang");
+
         $terms = Term::query()
             ->withCount("definitions")
             ->where("owner_id", $request->user()->id)
+            ->when($termQuery !== null, function (ElBuilder $query) use ($termQuery) {
+                $query->where("name", "ilike", "%{$termQuery}%");
+            })
+            ->when($langQuery !== null, function (ElBuilder $query) use ($langQuery) {
+                $query->where("lang_id", $langQuery);
+            })
             ->latest("updated_at")
             ->paginate();
 
-        return view("terms.index", ["terms" => $terms]);
+        $langs = Lang::query()->orderBy("name", "asc")->get();
+        $allTermsCount = Term::query()
+            ->where("owner_id", $request->user()->id)
+            ->count();
+
+        return view("terms.index", [
+            "terms" => $terms,
+            "langs" => $langs,
+            "allTermsCount" => $allTermsCount,
+        ]);
     }
 
     public function create()
