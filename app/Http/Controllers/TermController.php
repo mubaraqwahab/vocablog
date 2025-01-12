@@ -6,7 +6,8 @@ use App\Models\Definition;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
-use Illuminate\Database\Query\Builder;
+/* use Illuminate\Database\Query\Builder; */
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +19,19 @@ class TermController extends Controller
 {
     public function index(Request $request)
     {
+        // TODO: filter by query string (term and lang)
+        $termQuery = $request->query("term");
+        $langQuery = $request->query("lang");
+
         $terms = Term::query()
             ->withCount("definitions")
             ->where("owner_id", $request->user()->id)
+            ->when($termQuery, function (Builder $query) use ($termQuery) {
+                $query->where("name", "like", "%{$termQuery}%");
+            })
+            ->when($langQuery, function (Builder $query) use ($langQuery) {
+                $query->where("lang_id", $langQuery);
+            })
             ->latest("updated_at")
             ->paginate();
 

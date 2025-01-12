@@ -11,8 +11,22 @@
     </div>
   @endif
 
+  <!-- TODO: How should search work when the user has no terms at all? -->
+
   @if ($terms->count())
-    <a href="{{ rroute('terms.create') }}" class="Button Button--primary mb-4">New term</a>
+    <form>
+      <label class="sr-only" for="term">Search</label>
+      <input name="term" id="term" />
+      <label for="lang">Language</label>
+      <select id="lang" name="lang">
+        <option>English</option>
+        <option>Yoruba</option>
+      </select>
+      <button type="submit" class="Button Button--secondary">Search</button>
+    </form>
+    <div class="flex items-center">
+      <a href="{{ rroute('terms.create') }}" class="Button Button--primary mb-4">New term</a>
+    </div>
 
     <p class="text-sm text-gray-500 mb-4">
       Showing {{ $terms->firstItem() }} to {{ $terms->lastItem() }} of {{ $terms->total() }} terms
