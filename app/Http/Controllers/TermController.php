@@ -199,12 +199,19 @@ class TermController extends Controller
         ];
 
         $messages = [
-            "term.unique" => "You already have this term.",
+            "term.unique" => "You already have this :attribute.",
             // This rule should only fail if the page's DOM has been tampered with (or something similar)
             "defs.*.id.exists" =>
                 "Something's wrong with your submission. Refresh the page and try submitting again.",
         ];
 
-        return Validator::make($input, $rules, $messages);
+        $attributes = [
+            "lang" => "language",
+            "defs.*.text" => "definition",
+            "defs.*.examples.*" => "example",
+            "defs.*.comment" => "comment",
+        ];
+
+        return Validator::make($input, $rules, $messages, $attributes);
     }
 }

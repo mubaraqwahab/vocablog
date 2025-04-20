@@ -6,12 +6,8 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TermController;
 use Illuminate\Support\Facades\Route;
 
-Route::get("/", function () {
-    return redirect(rroute("terms.index"));
-});
-
 Route::middleware("guest")->group(function () {
-    Route::view("login", "login")->name("login");
+    Route::view("/", "index")->name("index");
 
     // TODO: throttle this?
     Route::post("login", [AuthController::class, "sendLoginLink"]);

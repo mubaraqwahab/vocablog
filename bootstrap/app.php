@@ -11,7 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: "/up"
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectUsersTo(route("terms.index"));
+        $middleware->redirectGuestsTo(route("index"));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

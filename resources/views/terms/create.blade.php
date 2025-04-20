@@ -2,13 +2,8 @@
   <h1 class="PageHeading">Add a new term</h1>
 
   @if ($errors->any())
-    <div>
-      <strong>Errors</strong>
-      <ul>
-        @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
+    <div class="mb-5 border border-red-300 bg-red-100 text-red-700 rounded px-4 py-2">
+      <p class="font-medium">{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
     </div>
   @endif
 
@@ -17,17 +12,26 @@
       <label for="term" class="Label">
         <span class="Label-text">Term</span>
         <small class="Label-helper">A term can be a word, a phrase or any other form of expression that you learnt.</small>
+        @foreach ($errors->get('term') as $error)
+          <small class="Label-error">{{ $error }}</small>
+        @endforeach
       </label>
       <input
         type="text" id="term" name="term" value="{{ old('term') }}"
         required autocapitalize="none" autofocus
         class="FormControl"
+        @error('term') aria-invalid="true" @enderror
       />
     </div>
 
     <div class="FormGroup">
-      <label for="lang" class="Label Label-text">Language</label>
-      <select id="lang" name="lang" required class="FormControl">
+      <label for="lang" class="Label">
+        <span class="Label-text">Language</span>
+        @foreach ($errors->get('lang') as $error)
+          <small class="Label-error">{{ $error }}</small>
+        @endforeach
+      </label>
+      <select id="lang" name="lang" required class="FormControl" @error('term') aria-invalid="true" @enderror>
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
@@ -54,7 +58,9 @@
         <template x-for="(def, i) in defs" hidden>
           <li class="mb-5 space-y-5">
             <div class="FormGroup">
-              <label x-bind:for="`def-${i}`" class="Label Label-text">Definition</label>
+              <label x-bind:for="`def-${i}`" class="Label">
+                <span class="Label-text">Definition</span>
+              </label>
               <textarea
                 x-bind:name="`defs[${i}][text]`"
                 x-bind:id="`def-${i}`"
@@ -111,7 +117,7 @@
                 </template>
               </ul>
 
-              <template x-if="def.examples.length < 3" hidden>
+              <template x-if="def.examples.length < 5" hidden>
                 <button
                   type="button"
                   x-on:click="() => {
