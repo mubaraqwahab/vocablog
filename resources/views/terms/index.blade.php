@@ -20,11 +20,11 @@
     <x-form class="flex items-center flex-wrap gap-4 mb-6 pb-6 border-b">
       <div class="FormGroup FormGroup--horizontal items-center flex-grow">
         <label class="Label Label-text text-sm" for="term">Term</label>
-        <input name="term" id="term" class="FormControl text-sm w-full bg-gray-50/90" value="{{ request()->query('term') }}" />
+        <input name="term" id="term" class="FormControl text-sm w-full bg-gray-50/80" value="{{ request()->query('term') }}" />
       </div>
       <div class="FormGroup FormGroup--horizontal items-center flex-grow sm:flex-grow-0">
         <label for="lang" class="Label Label-text text-sm">Language</label>
-        <select id="lang" name="lang" class="FormControl w-full sm:w-auto bg-gray-50/90 text-sm">
+        <select id="lang" name="lang" class="FormControl w-full sm:w-auto bg-gray-50/80 text-sm">
           <option value="">All</option>
           @foreach ($langs as $lang)
             <option
