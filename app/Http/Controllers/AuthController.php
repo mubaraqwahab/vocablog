@@ -35,7 +35,7 @@ class AuthController extends Controller
 
         Mail::to($email)->sendNow(new LoginLink($signedUrl));
 
-        return redirect(rroute("check-your-email"));
+        return redirect(route("check-your-email"));
     }
 
     public function store(Request $request): RedirectResponse
@@ -55,7 +55,7 @@ class AuthController extends Controller
 
         return $user->wasRecentlyCreated
             ? redirect(rroute("complete-profile.edit"))
-            : redirect()->intended(rroute("terms.index"));
+            : redirect()->intended(route("terms.index"));
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -66,6 +66,6 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect("/");
+        return redirect(route("index"));
     }
 }
