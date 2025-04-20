@@ -21,7 +21,7 @@
   @endif
 
   @if ($allTermsCount > 0)
-    <x-form class="flex items-center flex-wrap gap-4 mb-6 pb-6 border-b">
+    <x-form class="flex items-center flex-wrap gap-4 mb-6 pb-6">
       <div class="FormGroup FormGroup--horizontal items-center flex-grow">
         <label class="Label Label-text text-sm" for="term">Term</label>
         <input name="term" id="term" class="FormControl text-sm w-full bg-gray-50/80" value="{{ request()->query('term') }}" />
