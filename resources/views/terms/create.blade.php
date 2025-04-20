@@ -2,34 +2,36 @@
   <h1 class="PageHeading">Add a new term</h1>
 
   @if ($errors->any())
-    <div>
-      <strong>Errors</strong>
-      <ul>
-        @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
+    <div class="mb-5 border border-red-300 bg-red-100 text-red-700 rounded px-4 py-2">
+      <p class="font-medium">{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
     </div>
   @endif
 
   <x-form method="POST" action="{{ rroute('terms.store') }}" class="flex flex-col gap-y-5">
-    <p class="italic text-gray-500">Required fields are marked with an asterisk (*).</p>
-
     <div class="FormGroup">
       <label for="term" class="Label">
-        <span class="Label-text">Term *</span>
-        <small class="Label-helper">A term can be a word, a phrase or any other form of expression.</small>
+        <span class="Label-text">Term</span>
+        <small class="Label-helper">A term can be a word, a phrase or any other form of expression that you learnt.</small>
+        @foreach ($errors->get('term') as $error)
+          <small class="Label-error">{{ $error }}</small>
+        @endforeach
       </label>
       <input
         type="text" id="term" name="term" value="{{ old('term') }}"
-        required autocapitalize="off" autofocus
+        required autocapitalize="none" autofocus
         class="FormControl"
+        @error('term') aria-invalid="true" @enderror
       />
     </div>
 
     <div class="FormGroup">
-      <label for="lang" class="Label Label-text">Language *</label>
-      <select id="lang" name="lang" required class="FormControl">
+      <label for="lang" class="Label">
+        <span class="Label-text">Language</span>
+        @foreach ($errors->get('lang') as $error)
+          <small class="Label-error">{{ $error }}</small>
+        @endforeach
+      </label>
+      <select id="lang" name="lang" required class="FormControl" @error('term') aria-invalid="true" @enderror>
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
@@ -56,45 +58,49 @@
         <template x-for="(def, i) in defs" hidden>
           <li class="mb-5 space-y-5">
             <div class="FormGroup">
-              <label x-bind:for="`def-${i}`" class="Label Label-text">Definition *</label>
+              <label x-bind:for="`def-${i}`" class="Label">
+                <span class="Label-text">Definition</span>
+              </label>
               <textarea
                 x-bind:name="`defs[${i}][text]`"
                 x-bind:id="`def-${i}`"
                 x-model="def.text"
-                x-on:keydown.enter.prevent
                 x-init="() => {
                   if (newlyAddedThing === 'definition' && i === defs.length - 1) {
                     $nextTick(() => $el.focus());
                     newlyAddedThing = null;
                   }
                 }"
+                x-on:keydown.enter.prevent="$el.form.requestSubmit()"
+                aria-multiline="false"
                 required
                 class="FormControl"
               ></textarea>
             </div>
 
             <div class="space-y-3">
-              <p class="flex flex-col">
-                <strong>Examples</strong>
-                <span class="text-gray-500">You can add up to 3 examples.</span>
+              <p class="Label">
+                <strong class="Label-text">Examples (optional)</strong>
+                <span class="Label-helper">You can add up to 3 examples.</span>
               </p>
 
               <ul class="list-disc pl-6 space-y-3" x-show="def.examples.length > 0">
                 <template x-for="(_, j) in def.examples" hidden>
                   <li class="space-y-2">
                     <div class="FormGroup">
-                      <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1} *`" class="Label Label-text"></label>
+                      <label x-bind:for="`example-${i}-${j}`" x-text="`Example ${j+1}`" class="Label Label-text"></label>
                       <textarea
                         x-bind:id="`example-${i}-${j}`"
                         x-bind:name="`defs[${i}][examples][${j}]`"
                         x-model="def.examples[j]"
-                        x-on:keydown.enter.prevent
                         x-init="() => {
                           if (newlyAddedThing === 'example' && j === def.examples.length - 1) {
                             $nextTick(() => $el.focus());
                             newlyAddedThing = null;
                           }
                         }"
+                        x-on:keydown.enter.prevent="$el.form.requestSubmit()"
+                        aria-multiline="false"
                         required
                         class="FormControl"
                       ></textarea>
@@ -111,7 +117,7 @@
                 </template>
               </ul>
 
-              <template x-if="def.examples.length < 3" hidden>
+              <template x-if="def.examples.length < 5" hidden>
                 <button
                   type="button"
                   x-on:click="() => {
@@ -126,7 +132,7 @@
 
             <div class="FormGroup">
               <label x-bind:for="`comment-${i}`" class="Label">
-                <span class="Label-text">Comment</span>
+                <span class="Label-text">Comment (optional)</span>
                 <small class="Label-helper">
                   Here you can write things like how to use this term,
                   or how this term compares to related terms.
@@ -136,7 +142,8 @@
                 x-bind:name="`defs[${i}][comment]`"
                 x-bind:id="`comment-${i}`"
                 x-model="def.comment"
-                x-on:keydown.enter.prevent
+                x-on:keydown.enter.prevent="$el.form.requestSubmit()"
+                aria-multiline="false"
                 class="FormControl"
               ></textarea>
             </div>

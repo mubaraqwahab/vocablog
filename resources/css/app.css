@@ -22,7 +22,7 @@
   }
 
   .Button {
-    @apply inline-block border px-3 py-2 rounded text-sm font-semibold;
+    @apply inline-block border px-3 py-2 rounded text-sm font-semibold motion-safe:transition-colors;
   }
 
   .Button--primary {
@@ -58,6 +58,10 @@
 
   .Label-helper {
     @apply text-sm text-gray-500;
+  }
+
+  .Label-error {
+    @apply text-sm text-red-700 font-medium;
   }
 
   .FormControl {

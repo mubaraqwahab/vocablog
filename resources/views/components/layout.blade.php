@@ -7,29 +7,38 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
   </head>
   <body class="text-gray-700 bg-white">
-    <nav class="border-b">
-      <div class="flex justify-between items-center container py-4 max-w-prose">
+    <nav class="border-b bg-gray-50">
+      <div class="flex justify-between items-center container py-3 max-w-prose">
         <a href="/" class="font-bold">{{ config('app.name') }}</a>
         @auth
-          <details class="relative">
-            <summary class="truncate max-w-40">{{ Auth::user()->name ?? Auth::user()->email }}</summary>
-            <div class="absolute top-full right-0 w-40 border p-2 bg-white mt-2 shadow">
-              <ul>
-                <li>
-                  <a href="{{ rroute('settings.edit') }}" class="block px-3 py-2 underline">Settings</a>
-                </li>
-                <li>
-                  <x-form method="POST" action="{{ rroute('logout') }}">
-                    <button type="submit" class="block w-full text-left px-3 py-2 underline">Log out</button>
-                  </x-form>
-                </li>
-              </ul>
-            </div>
+          <details class="relative group">
+            <summary class="inline-flex items-center gap-x-2 truncate max-w-40 px-2 py-1 -mr-2 rounded motion-safe:transition-colors hover:bg-gray-200">
+              <span>{{ Auth::user()->name ?? Auth::user()->email }}</span>
+              <i data-lucide="chevron-down" class="h-4 w-4 group-open:rotate-180 motion-safe:transition-transform"></i>
+            </summary>
+            <details-menu role="menu" class="absolute top-full right-0 w-40 border p-1 bg-white mt-2 rounded shadow">
+              <a
+                href="{{ rroute('settings.edit') }}"
+                role="menuitem"
+                class="block w-full text-left px-3 py-2 rounded motion-safe:transition-colors hover:bg-gray-100"
+              >
+                Settings
+              </a>
+              <x-detached-button
+                type="submit"
+                role="menuitem"
+                class="block w-full text-left px-3 py-2 rounded motion-safe:transition-colors hover:bg-gray-100"
+                formmethod="POST"
+                formaction="{{ rroute('logout') }}"
+              >
+                Log out
+              </x-detached-button>
+            </details-menu>
           </details>
         @endauth
       </div>
     </nav>
-    <div class="container py-8 max-w-prose">
+    <div class="container py-8 sm:py-10 max-w-prose">
       {{ $slot }}
     </div>
   </body>

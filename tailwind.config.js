@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Arial", ...defaultTheme.fontFamily.sans],
+        sans: ["Work Sans Variable", ...defaultTheme.fontFamily.sans],
       },
     },
   },

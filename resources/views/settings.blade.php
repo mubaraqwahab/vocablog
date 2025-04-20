@@ -32,7 +32,10 @@
       />
     </div>
     <div class="FormGroup">
-      <label for="email" class="Label Label-text">Email (readonly)</label>
+      <label for="email" class="Label">
+        <span class="Label-text">Email</span>
+        <span class="Label-helper">You can't edit this.</span>
+      </label>
       <input
         type="text" id="email" readonly
         value="{{ Auth::user()->email }}"
