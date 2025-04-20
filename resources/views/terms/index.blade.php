@@ -1,5 +1,10 @@
 <x-layout title="My vocabulary">
-  <h1 class="PageHeading">My vocabulary</h1>
+  <div class="flex items-center justify-between mb-5">
+    <h1 class="PageHeading mb-0">My vocabulary</h1>
+    <div class="flex items-center">
+      <a href="{{ rroute('terms.create') }}" class="Button Button--primary">Add term</a>
+    </div>
+  </div>
 
   @if (session('status') === 'term-deleted')
     <div
@@ -12,14 +17,14 @@
   @endif
 
   @if ($allTermsCount > 0)
-    <x-form class="flex items-center flex-wrap gap-4 mb-4">
-      <div class="FormGroup FormGroup--horizontal items-center">
+    <x-form class="flex items-center flex-wrap gap-4 mb-6 pb-6 border-b">
+      <div class="FormGroup FormGroup--horizontal items-center flex-grow">
         <label class="Label Label-text text-sm" for="term">Term</label>
-        <input name="term" id="term" class="FormControl text-sm" value="{{ request()->query('term') }}" />
+        <input name="term" id="term" class="FormControl text-sm w-full bg-gray-50/90" value="{{ request()->query('term') }}" />
       </div>
-      <div class="FormGroup FormGroup--horizontal items-center">
+      <div class="FormGroup FormGroup--horizontal items-center flex-grow sm:flex-grow-0">
         <label for="lang" class="Label Label-text text-sm">Language</label>
-        <select id="lang" name="lang" class="FormControl text-sm">
+        <select id="lang" name="lang" class="FormControl w-full sm:w-auto bg-gray-50/90 text-sm">
           <option value="">All</option>
           @foreach ($langs as $lang)
             <option
@@ -32,24 +37,25 @@
       <button type="submit" class="Button Button--secondary">Search</button>
     </x-form>
 
-    <div class="flex items-center">
-      <a href="{{ rroute('terms.create') }}" class="Button Button--primary mb-4">New term</a>
-    </div>
 
     @if ($terms->count() > 0)
       <p class="text-sm text-gray-500 mb-4">
         Showing {{ $terms->firstItem() }} to {{ $terms->lastItem() }} of {{ $terms->total() }} terms
       </p>
 
-      <ul class="grid gap-4 mb-6">
+      <ul class="flex flex-col gap-4 mb-6">
         @foreach ($terms as $term)
           <li>
-            <a href="{{ rroute('terms.show', ['term' => $term]) }}" class="flex items-baseline justify-between border rounded-md px-4 py-3 hover:bg-gray-50">
-              <div class="flex items-baseline gap-4">
-                <strong class="text-lg">{{ $term->name }}</strong>
-                <span class="text-sm text-gray-500">{{ $term->lang->name }}</span>
-              </div>
-              <span class="text-sm text-gray-500">{{ $term->definitions_count }} {{ Str::plural('definition', $term->definitions_count) }}</span>
+            <a
+              href="{{ rroute('terms.show', ['term' => $term]) }}"
+              class="flex flex-col gap-2 sm:gap-4 sm:flex-row sm:justify-between sm:items-baseline border rounded-md px-4 py-3 motion-safe:transition-colors hover:bg-gray-50"
+            >
+              <strong class="text-lg truncate">{{ $term->name }}</strong>
+              <span class="text-sm text-gray-500 flex-shrink-0 flex gap-x-2">
+                <span>{{ $term->lang->name }}</span>
+                <span>&middot;</span>
+                <span>{{ $term->definitions_count }} {{ Str::plural('definition', $term->definitions_count) }}</span>
+              </span>
             </a>
           </li>
         @endforeach
