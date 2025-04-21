@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -23,7 +22,7 @@ class TermController extends Controller
         $termq = $request->query("term");
         $langq = $request->query("lang");
 
-        $q = Term::query()
+        $terms = Term::query()
             ->withCount("definitions")
             ->where("owner_id", $request->user()->id)
             ->when($termq, function (ElBuilder $query) use ($termq) {
@@ -43,11 +42,9 @@ class TermController extends Controller
                 $query->where("lang_id", $langq);
             })
             ->distinct()
-            ->latest("updated_at");
-
-        Log::info("term.index query: {q}", ["q" => $q->toSql()]);
-
-        $terms = $q->paginate();
+            ->latest("updated_at")
+            ->ddRawSql();
+        // ->paginate();
 
         $langs = Lang::query()->orderBy("name", "asc")->get();
         $allTermsCount = Term::query()
