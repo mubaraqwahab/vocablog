@@ -27,16 +27,15 @@ class TermController extends Controller
             ->where("owner_id", $request->user()->id)
             ->when($termq, function (ElBuilder $query) use ($termq) {
                 $vec =
-                    "setweight(to_tsvector('english', terms.name), 'A')" .
-                    " || setweight(to_tsvector('english', definitions.text), 'B')";
+                    "setweight(to_tsvector('en', terms.name), 'A')" .
+                    " || setweight(to_tsvector('en', definitions.text), 'B')";
 
                 $query
                     ->join("definitions", "definitions.term_id", "=", "terms.id")
-                    ->whereRaw("($vec) @@ plainto_tsquery('english', ?)", [$termq])
-                    ->selectRaw(
-                        "ts_rank_cd(($vec), plainto_tsquery('english', ?)) as _rank",
-                        [$termq]
-                    )
+                    ->whereRaw("($vec) @@ plainto_tsquery('en', ?)", [$termq])
+                    ->selectRaw("ts_rank_cd(($vec), plainto_tsquery('en', ?)) as _rank", [
+                        $termq,
+                    ])
                     ->orderByRaw("_rank desc");
             })
             ->when($langq, function (ElBuilder $query) use ($langq) {
