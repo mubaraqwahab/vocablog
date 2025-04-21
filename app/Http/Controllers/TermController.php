@@ -19,18 +19,30 @@ class TermController extends Controller
 {
     public function index(Request $request)
     {
-        $termQuery = $request->query("term");
-        $langQuery = $request->query("lang");
+        $termq = $request->query("term");
+        $langq = $request->query("lang");
 
         $terms = Term::query()
             ->withCount("definitions")
             ->where("owner_id", $request->user()->id)
-            ->when($termQuery !== null, function (ElBuilder $query) use ($termQuery) {
-                $query->where("name", "ilike", "%{$termQuery}%");
+            ->when($termq, function (ElBuilder $query) use ($termq) {
+                $vec =
+                    "setweight(to_tsvector('english', terms.name), 'A')" .
+                    " || setweight(to_tsvector('english', definitions.text), 'B')";
+
+                $query
+                    ->join("definitions", "definitions.term_id", "=", "terms.id")
+                    ->whereRaw("($vec) @@ plainto_tsquery('english', ?)", [$termq])
+                    ->selectRaw(
+                        "ts_rank_cd(($vec), plainto_tsquery('english', ?)) as _rank",
+                        [$termq]
+                    )
+                    ->orderByRaw("_rank desc");
             })
-            ->when($langQuery !== null, function (ElBuilder $query) use ($langQuery) {
-                $query->where("lang_id", $langQuery);
+            ->when($langq, function (ElBuilder $query) use ($langq) {
+                $query->where("lang_id", $langq);
             })
+            ->distinct()
             ->latest("updated_at")
             ->paginate();
 
@@ -79,7 +91,7 @@ class TermController extends Controller
             );
         });
 
-        return redirect(rroute("terms.index"));
+        return redirect(route("terms.index"));
     }
 
     public function show(Term $term)
@@ -159,7 +171,7 @@ class TermController extends Controller
             $term->save();
         });
 
-        return redirect(rroute("terms.show", ["term" => $term]));
+        return redirect(route("terms.show", ["term" => $term]));
     }
 
     public function destroy(Term $term)
@@ -168,7 +180,7 @@ class TermController extends Controller
 
         $term->delete();
 
-        return redirect(rroute("terms.index"))->with("status", "term-deleted");
+        return redirect(route("terms.index"))->with("status", "term-deleted");
     }
 
     protected function validator(array $input, Term $term = null)

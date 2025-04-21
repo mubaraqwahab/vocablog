@@ -24,6 +24,6 @@ class SettingsController extends Controller
         $user->weekly_digest_enabled = $request->has("weekly_digest_enabled");
         $user->save();
 
-        return redirect(rroute("settings.edit"))->with("status", "settings-updated");
+        return redirect(route("settings.edit"))->with("status", "settings-updated");
     }
 }

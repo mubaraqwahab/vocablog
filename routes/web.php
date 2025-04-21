@@ -9,15 +9,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware("guest")->group(function () {
     Route::view("/", "index")->name("index");
 
-    // TODO: throttle this?
-    Route::post("login", [AuthController::class, "sendLoginLink"])->name("login");
+    Route::post("login", [AuthController::class, "sendLoginLink"])
+        ->middleware("throttle:6,1")
+        ->name("login");
 
     Route::view("check-your-email", "check-your-email")->name("check-your-email");
-});
 
-Route::get("verify", [AuthController::class, "store"])
-    ->middleware(["signed", "throttle:6,1"])
-    ->name("verify");
+    Route::get("verify", [AuthController::class, "store"])
+        ->middleware(["signed", "throttle:6,1"])
+        ->name("verify");
+});
 
 Route::middleware("auth")->group(function () {
     Route::get("settings", [SettingsController::class, "edit"])->name("settings.edit");
