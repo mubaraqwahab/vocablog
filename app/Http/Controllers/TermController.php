@@ -47,7 +47,7 @@ class TermController extends Controller
 
         Log::info("term.index query: {q}", ["q" => $q->toSql()]);
 
-        $term = $q->paginate();
+        $terms = $q->paginate();
 
         $langs = Lang::query()->orderBy("name", "asc")->get();
         $allTermsCount = Term::query()
