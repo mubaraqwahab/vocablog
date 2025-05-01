@@ -72,6 +72,7 @@
                   }
                 }"
                 x-on:keydown.enter.prevent="$el.form.requestSubmit()"
+                enterkeyhint="go"
                 aria-multiline="false"
                 required
                 class="FormControl"
@@ -100,6 +101,7 @@
                           }
                         }"
                         x-on:keydown.enter.prevent="$el.form.requestSubmit()"
+                        enterkeyhint="go"
                         aria-multiline="false"
                         required
                         class="FormControl"
@@ -143,6 +145,7 @@
                 x-bind:id="`comment-${i}`"
                 x-model="def.comment"
                 x-on:keydown.enter.prevent="$el.form.requestSubmit()"
+                enterkeyhint="go"
                 aria-multiline="false"
                 class="FormControl"
               ></textarea>
