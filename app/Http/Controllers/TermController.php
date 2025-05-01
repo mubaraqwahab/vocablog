@@ -43,7 +43,8 @@ class TermController extends Controller
             })
             ->distinct()
             ->latest("updated_at")
-            ->paginate();
+            ->paginate()
+            ->appends($request->query());
 
         $langs = Lang::query()->orderBy("name", "asc")->get();
         $allTermsCount = Term::query()
@@ -182,6 +183,7 @@ class TermController extends Controller
         return redirect(route("terms.index"))->with("status", "term-deleted");
     }
 
+    // TODO: Consider using a FormRequest instead of this.
     protected function validator(array $input, Term $term = null)
     {
         $uniqueTermRule = Rule::unique("terms", "name")->where(
