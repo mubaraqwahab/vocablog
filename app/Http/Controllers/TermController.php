@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTermRequest;
+use App\Http\Requests\UpdateTermRequest;
 use App\Models\Definition;
 use App\Models\Lang;
 use App\Models\Term;
@@ -69,9 +71,9 @@ class TermController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreTermRequest $request)
     {
-        $validated = $this->validator($request->input())->validate();
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request) {
             $term = new Term();
@@ -128,11 +130,9 @@ class TermController extends Controller
         ]);
     }
 
-    public function update(Request $request, Term $term)
+    public function update(UpdateTermRequest $request, Term $term)
     {
-        Gate::allowIf(fn(User $user) => $user->is($term->owner));
-
-        $validated = $this->validator($request->input(), $term)->validate();
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $term) {
             $defsToKeep = collect();
@@ -181,50 +181,5 @@ class TermController extends Controller
         $term->delete();
 
         return redirect(route("terms.index"))->with("status", "term-deleted");
-    }
-
-    // TODO: Consider using a FormRequest instead of this.
-    protected function validator(array $input, Term $term = null)
-    {
-        $uniqueTermRule = Rule::unique("terms", "name")->where(
-            fn(Builder $query) => $query
-                ->where("owner_id", request()->user()->id)
-                ->where("lang_id", request()->input("lang"))
-        );
-
-        $existingDefRule = Rule::exists("definitions", "id")->where(
-            fn(Builder $query) => $query->where("term_id", $term->id)
-        );
-
-        $rules = [
-            "term" => [
-                "required",
-                "max:255",
-                $term ? $uniqueTermRule->ignoreModel($term) : $uniqueTermRule,
-            ],
-            "lang" => ["required", "exists:langs,id"],
-            "defs" => ["required", "array", "min:1"],
-            ...$term ? ["defs.*.id" => ["nullable", "integer", $existingDefRule]] : [],
-            "defs.*.text" => ["required", "max:255"],
-            "defs.*.examples" => ["array", "max:3"],
-            "defs.*.examples.*" => ["required", "max:255"],
-            "defs.*.comment" => ["max:255"],
-        ];
-
-        $messages = [
-            "term.unique" => "You already have this :attribute.",
-            // This rule should only fail if the page's DOM has been tampered with (or something similar)
-            "defs.*.id.exists" =>
-                "Something's wrong with your submission. Refresh the page and try submitting again.",
-        ];
-
-        $attributes = [
-            "lang" => "language",
-            "defs.*.text" => "definition",
-            "defs.*.examples.*" => "example",
-            "defs.*.comment" => "comment",
-        ];
-
-        return Validator::make($input, $rules, $messages, $attributes);
     }
 }
