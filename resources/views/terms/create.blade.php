@@ -17,8 +17,13 @@
         @endforeach
       </label>
       <input
-        type="text" id="term" name="term" value="{{ old('term') }}"
-        required autocapitalize="none" autofocus
+        type="text"
+        id="term"
+        name="term"
+        value="{{ old('term') }}"
+        required
+        autocapitalize="none"
+        autofocus
         class="FormControl"
         @error('term') aria-invalid="true" @enderror
       />
@@ -31,7 +36,13 @@
           <small class="Label-error">{{ $error }}</small>
         @endforeach
       </label>
-      <select id="lang" name="lang" required class="FormControl" @error('term') aria-invalid="true" @enderror>
+      <select
+        id="lang"
+        name="lang"
+        required
+        class="FormControl"
+        @error('lang') aria-invalid="true" @enderror
+      >
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
@@ -43,10 +54,16 @@
       </select>
     </div>
 
+    @php
+      $normalizedDefs = collect(old('defs', [$emptyDef]))->map(function ($def) {
+          return [...$def, 'examples' => $def['examples'] ?? []];
+      });
+    @endphp
+
     <div
       class="mt-1"
       x-data="{
-        defs: {{ Js::from(old('defs', [$emptyDef])) }},
+        defs: {{ Js::from($normalizedDefs) }},
         newlyAddedThing: null, // could be 'definition' or 'example'
       }"
     >
@@ -85,7 +102,7 @@
                 <span class="Label-helper">You can add up to 3 examples.</span>
               </p>
 
-              <ul class="list-disc pl-6 space-y-3" x-show="def.examples.length > 0">
+              <ul class="list-disc pl-6 space-y-3" x-show="def.examples && def.examples.length > 0">
                 <template x-for="(_, j) in def.examples" hidden>
                   <li class="space-y-2">
                     <div class="FormGroup">
@@ -119,7 +136,7 @@
                 </template>
               </ul>
 
-              <template x-if="def.examples.length < 5" hidden>
+              <template x-if="!def.examples || def.examples.length < 5" hidden>
                 <button
                   type="button"
                   x-on:click="() => {

@@ -2,29 +2,47 @@
   <h1 class="PageHeading">Edit term</h1>
 
   @if ($errors->any())
-    <div>
-      <strong>Errors</strong>
-      <ul>
-        @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
+    <div class="mb-5 border border-red-300 bg-red-100 text-red-700 rounded px-4 py-2">
+      <p class="font-medium">{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
     </div>
   @endif
 
   <x-form method="PUT" action="{{ rroute('terms.update', ['term' => $term]) }}" class="flex flex-col gap-y-5">
     <div class="FormGroup">
-      <label for="term" class="Label Label-text">Term</label>
+      <label for="term" class="Label">
+        <span class="Label-text">Term</span>
+        <small class="Label-helper">A term can be a word, a phrase or any other form of expression that you learnt.</small>
+        @foreach ($errors->get('term') as $error)
+          <small class="Label-error">{{ $error }}</small>
+        @endforeach
+      </label>
       <input
-        type="text" id="term" name="term" value="{{ old('term', $term->name) }}"
-        required autocapitalize="none" autofocus
+        type="text"
+        id="term"
+        name="term"
+        value="{{ old('term', $term->name) }}"
+        required
+        autocapitalize="none"
+        autofocus
         class="FormControl"
+        @error('term') aria-invalid="true" @enderror
       />
     </div>
 
     <div class="FormGroup">
-      <label for="lang" class="Label Label-text">Language</label>
-      <select id="lang" name="lang" required class="FormControl">
+      <label for="lang" class="Label">
+        <span class="Label-text">Language</span>
+        @foreach ($errors->get('lang') as $error)
+          <small class="Label-error">{{ $error }}</small>
+        @endforeach
+      </label>
+      <select
+        id="lang"
+        name="lang"
+        required
+        class="FormControl"
+        @error('lang') aria-invalid="true" @enderror
+      >
         @foreach ($langs as $lang)
           <option
             value="{{ $lang->id }}"
@@ -36,10 +54,16 @@
       </select>
     </div>
 
+    @php
+      $normalizedDefs = collect(old('defs', $defs))->map(function ($def) {
+          return [...$def, 'examples' => $def['examples'] ?? []];
+      });
+    @endphp
+
     <div
       class="mt-1"
       x-data="{
-        defs: {{ Js::from(old('defs', $defs)) }},
+        defs: {{ Js::from($normalizedDefs) }},
         newlyAddedThing: null, // could be 'definition' or 'example'
       }"
     >
@@ -53,7 +77,9 @@
             <input type="hidden" x-bind:name="`defs[${i}][id]`" x-model="def.id" />
 
             <div class="FormGroup">
-              <label x-bind:for="`def-${i}`" class="Label Label-text">Definition</label>
+              <label x-bind:for="`def-${i}`" class="Label">
+                <span class="Label-text">Definition</span>
+              </label>
               <textarea
                 x-bind:name="`defs[${i}][text]`"
                 x-bind:id="`def-${i}`"
@@ -64,10 +90,10 @@
                     newlyAddedThing = null;
                   }
                 }"
-                required
                 x-on:keydown.enter.prevent="$el.form.requestSubmit()"
                 enterkeyhint="go"
                 aria-multiline="false"
+                required
                 class="FormControl"
               ></textarea>
             </div>
@@ -126,7 +152,13 @@
             </div>
 
             <div class="FormGroup">
-              <label x-bind:for="`comment-${i}`" class="Label Label-text">Comment (optional)</label>
+              <label x-bind:for="`comment-${i}`" class="Label">
+                <span class="Label-text">Comment (optional)</span>
+                <small class="Label-helper">
+                  Here you can write things like how to use this term,
+                  or how this term compares to related terms.
+                </small>
+              </label>
               <textarea
                 x-bind:name="`defs[${i}][comment]`"
                 x-bind:id="`comment-${i}`"
