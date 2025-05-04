@@ -28,16 +28,28 @@ class TermController extends Controller
             ->withCount("definitions")
             ->where("owner_id", $request->user()->id)
             ->when($termq, function (ElBuilder $query) use ($termq) {
+                // TODO: Add def examples to vector.
                 $vec =
                     "setweight(to_tsvector('en', terms.name), 'A')" .
-                    " || setweight(to_tsvector('en', definitions.text), 'B')";
+                    " || setweight(to_tsvector('en', definitions.text), 'B')" .
+                    " || setweight(to_tsvector('en', coalesce(definitions.comment, '')), 'C')";
 
                 $query
                     ->join("definitions", "definitions.term_id", "=", "terms.id")
                     ->whereRaw("($vec) @@ plainto_tsquery('en', ?)", [$termq])
-                    ->selectRaw("ts_rank_cd(($vec), plainto_tsquery('en', ?)) as _rank", [
-                        $termq,
-                    ])
+                    ->orWhere(
+                        DB::raw(
+                            "terms.name || definitions.text || coalesce(definitions.comment, '')"
+                        ),
+                        "ilike",
+                        "%$termq%"
+                    )
+                    ->selectRaw(
+                        // 32 implies a normalized ranking in interval [0, 1].
+                        // For search terms that don't match any tsvector but match via ilike, set the rank to 0.5.
+                        "coalesce(nullif(ts_rank_cd(($vec), plainto_tsquery('en', ?), 32), 0), 0.5) as _rank",
+                        [$termq]
+                    )
                     ->orderByRaw("_rank desc");
             })
             ->when($langq, function (ElBuilder $query) use ($langq) {
@@ -45,8 +57,9 @@ class TermController extends Controller
             })
             ->distinct()
             ->latest("updated_at")
-            ->paginate()
-            ->appends($request->query());
+            ->ddRawSql();
+        // ->paginate()
+        // ->appends($request->query());
 
         $langs = Lang::query()->orderBy("name", "asc")->get();
         $allTermsCount = Term::query()

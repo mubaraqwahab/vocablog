@@ -1,6 +1,7 @@
 <x-layout title="My vocabulary">
   <div class="flex items-center justify-between mb-5">
     <h1 class="PageHeading mb-0">My vocabulary</h1>
+    <!-- TODO: Add a quiz btn somewhere -->
     @if ($allTermsCount > 0)
       <div class="flex items-center">
         <a href="{{ rroute('terms.create') }}" class="Button Button--primary">Add term</a>
