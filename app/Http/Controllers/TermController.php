@@ -8,14 +8,11 @@ use App\Models\Definition;
 use App\Models\Lang;
 use App\Models\Term;
 use App\Models\User;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as ElBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class TermController extends Controller
 {
@@ -24,43 +21,61 @@ class TermController extends Controller
         $termq = $request->query("term");
         $langq = $request->query("lang");
 
-        $terms = Term::query()
+        $termsQuery = Term::query()
             ->withCount("definitions")
-            ->where("owner_id", $request->user()->id)
+            ->where("terms.owner_id", $request->user()->id)
             ->when($termq, function (ElBuilder $query) use ($termq) {
-                // TODO: Add def examples to vector.
+                $subquery = DB::table("definitions")
+                    ->leftJoin(
+                        DB::raw(
+                            "lateral jsonb_array_elements_text(definitions.examples) as example"
+                        ),
+                        DB::raw(1),
+                        DB::raw(1)
+                    )
+                    ->groupBy("definitions.term_id")
+                    ->selectRaw(
+                        "definitions.term_id" .
+                            ", string_agg(definitions.text, ' ') as agg_text" .
+                            ", coalesce(string_agg(definitions.comment, ' '), '') as agg_comment" .
+                            ", coalesce(string_agg(example, ' '), '') as agg_example"
+                    );
+
                 $vec =
                     "setweight(to_tsvector('en', terms.name), 'A')" .
-                    " || setweight(to_tsvector('en', definitions.text), 'B')" .
-                    " || setweight(to_tsvector('en', coalesce(definitions.comment, '')), 'C')";
+                    " || setweight(to_tsvector('en', d.agg_text), 'B')" .
+                    " || setweight(to_tsvector('en', d.agg_example), 'C')" .
+                    " || setweight(to_tsvector('en', d.agg_comment), 'C')";
 
                 $query
-                    ->join("definitions", "definitions.term_id", "=", "terms.id")
-                    ->whereRaw("($vec) @@ plainto_tsquery('en', ?)", [$termq])
-                    ->orWhere(
-                        DB::raw(
-                            "terms.name || definitions.text || coalesce(definitions.comment, '')"
-                        ),
-                        "ilike",
-                        "%$termq%"
-                    )
+                    ->joinSub($subquery, "d", "d.term_id", "terms.id")
+                    ->where(function (ElBuilder $q) use ($termq, $vec) {
+                        $q->where("terms.name", "ilike", "%$termq%")
+                            ->orWhere("d.agg_text", "ilike", "%$termq%")
+                            ->orWhere("d.agg_comment", "ilike", "%$termq%")
+                            ->orWhere("d.agg_example", "ilike", "%$termq%")
+                            ->orWhereRaw("($vec) @@ plainto_tsquery('en', ?)", [$termq]);
+                    })
                     ->selectRaw(
                         // 32 implies a normalized ranking in interval [0, 1].
-                        // For search terms that don't match any tsvector but match via ilike, set the rank to 0.5.
-                        "coalesce(nullif(ts_rank_cd(($vec), plainto_tsquery('en', ?), 32), 0), 0.5) as _rank",
-                        [$termq]
+                        "greatest(" .
+                            "ts_rank_cd(($vec), plainto_tsquery('en', ?), 32)" .
+                            ", case when terms.name ilike ? then 0.9" .
+                            "  when d.agg_text ilike ? then 0.5" .
+                            "  when d.agg_comment ilike ? or d.agg_example ilike ? then 0.1" .
+                            " end) as _rank",
+                        [$termq, "%$termq%", "%$termq%", "%$termq%", "%$termq%"]
                     )
                     ->orderByRaw("_rank desc");
             })
             ->when($langq, function (ElBuilder $query) use ($langq) {
-                $query->where("lang_id", $langq);
+                $query->where("terms.lang_id", $langq);
             })
-            ->distinct()
-            ->latest("updated_at")
-            ->ddRawSql();
-        // ->paginate()
-        // ->appends($request->query());
+            ->latest("terms.updated_at");
 
+        $termsQuery->dumpRawSql();
+
+        $terms = $termsQuery->paginate()->appends($request->query());
         $langs = Lang::query()->orderBy("name", "asc")->get();
         $allTermsCount = Term::query()
             ->where("owner_id", $request->user()->id)
