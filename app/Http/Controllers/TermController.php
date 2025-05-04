@@ -66,12 +66,14 @@ class TermController extends Controller
                             " end) as _rank",
                         [$termq, "%$termq%", "%$termq%", "%$termq%", "%$termq%"]
                     )
-                    ->orderByRaw("_rank desc");
+                    ->orderBy("_rank", "desc");
             })
             ->when($langq, function (ElBuilder $query) use ($langq) {
                 $query->where("terms.lang_id", $langq);
             })
             ->latest("terms.updated_at");
+
+        $termsQuery->dumpRawSql();
 
         $terms = $termsQuery->paginate()->appends($request->query());
         $langs = Lang::query()->orderBy("name", "asc")->get();

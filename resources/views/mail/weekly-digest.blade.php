@@ -5,24 +5,24 @@ Hello {{ $user->name ?? $user->email }}, it's revision time!
 
 You learnt these new terms in the past week:
 
-<ol>
 @foreach ($user->terms as $term)
-<li>
-<strong>{{ $term->name }}</strong><br>
+<x-mail::panel>
+
+<strong>{{ $term->name }}</strong>
+
 @foreach ($term->definitions as $definition)
 {{ $definition->text }}
 
 @foreach ($definition->examples as $example)
-  - <i>{{ $example }}</i>
+- <i>{{ $example }}</i>
 @endforeach
 
 @if ($definition->comment)
-**Comment**: {{ $definition->comment }}
+{{ $definition->comment }}
 @endif
-<br>
 @endforeach
-</li>
+
+</x-mail::panel>
 @endforeach
-</ol>
 
 </x-mail::message>
