@@ -73,8 +73,6 @@ class TermController extends Controller
             })
             ->latest("terms.updated_at");
 
-        $termsQuery->dumpRawSql();
-
         $terms = $termsQuery->paginate()->appends($request->query());
         $langs = Lang::query()->orderBy("name", "asc")->get();
         $allTermsCount = Term::query()
