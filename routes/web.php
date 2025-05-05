@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompleteProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TermController;
+use App\Mail\LoginLink;
+use App\Mail\WeeklyDigest;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware("guest")->group(function () {
@@ -43,25 +45,24 @@ Route::middleware(["auth", "verified"])->group(function () {
 });
 
 Route::prefix("dev")->group(function () {
-    Route::get("/mail/{name}", function (string $name) {
+    Route::get("/mail/login-link", function () {
         if (app()->environment() === "production") {
             abort(404);
         }
 
-        /** @var \Illuminate\Mail\Mailable */
-        $mailable = app("App\\Mail\\{$name}", ["url" => request()->fullUrl()]);
+        $mailable = new LoginLink(request()->fullUrl());
         $mailable->to("test@example.com");
 
         return $mailable;
     });
 
-    Route::get("/notification/{name}", function (string $name) {
+    Route::get("/mail/weekly-digest", function () {
         if (app()->environment() === "production") {
             abort(404);
         }
 
-        /** @var \Illuminate\Mail\Mailable */
-        $mailable = app("App\\Notifications\\{$name}")->toMail(request()->user());
+        $mailable = new WeeklyDigest(request()->user());
+        $mailable->to("test@example.com");
 
         return $mailable;
     });

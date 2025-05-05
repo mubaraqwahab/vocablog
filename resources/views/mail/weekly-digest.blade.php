@@ -18,7 +18,7 @@ You learnt these new terms in the past week:
 @endforeach
 
 @if ($definition->comment)
-{{ $definition->comment }}
+<i>{{ $definition->comment }}</i>
 @endif
 @endforeach
 
