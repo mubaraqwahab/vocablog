@@ -16,6 +16,7 @@
     "symfony/postmark-mailer": "^7.0"
   },
   "require-dev": {
+    "barryvdh/laravel-debugbar": "^3.15",
     "fakerphp/faker": "^1.23",
     "fly-apps/dockerfile-laravel": "^1.0",
     "laravel/breeze": "^2.0",
