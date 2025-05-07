@@ -41,14 +41,17 @@ class QuizController extends Controller
             ->groupBy("ref_term_id");
 
         $questions = $terms->map(function ($term) use ($wrongOptions) {
+            $answer = $term->definitions[0]->text;
+            $options = Arr::shuffle([
+                $answer,
+                ...Arr::pluck($wrongOptions[$term->id], "text"),
+            ]);
             return [
                 "term" => $term->name,
                 "lang" => $term->lang->name,
-                "options" => Arr::shuffle([
-                    $term->definitions[0]->text,
-                    ...Arr::pluck($wrongOptions[$term->id], "text"),
-                ]),
-                "answer" => $term->definitions[0]->text,
+                "options" => $options,
+                "answer" => $answer,
+                "answerIndex" => array_search($answer, $options),
             ];
         });
 
