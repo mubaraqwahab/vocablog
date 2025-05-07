@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompleteProfileController;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TermController;
 use App\Mail\LoginLink;
@@ -42,6 +43,8 @@ Route::middleware("auth")->group(function () {
 
 Route::middleware(["auth", "verified"])->group(function () {
     Route::resource("terms", TermController::class);
+
+    Route::get("quiz", [QuizController::class, "edit"])->name("quiz");
 });
 
 Route::prefix("dev")->group(function () {
