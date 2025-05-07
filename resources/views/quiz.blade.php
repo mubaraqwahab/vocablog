@@ -38,7 +38,7 @@
             <label
               x-bind:for="`choice-${i}`"
               class="flex gap-x-3 items-center border rounded px-3 py-2 hover:bg-gray-50"
-              x-bind:class="response && 'pointer-events-none'"
+              x-bind:class="response !== null && 'pointer-events-none'"
             >
               <input
                 type="radio"
@@ -47,8 +47,8 @@
                 x-bind:id="`choice-${i}`"
                 x-model.number="tempResponse"
                 required
-                x-bind:readonly="!!response"
-                x-bind:class="response && 'pointer-events-none'"
+                x-bind:readonly="response !== null"
+                x-bind:class="response !== null && 'pointer-events-none text-gray-500'"
               />
               <span class="flex-grow" x-text="`${letter(i)}. ${option}`"></span>
             </label>
@@ -65,7 +65,12 @@
                 : `Nah! The correct answer is <b>${letter(question.answerIndex)}</b>.`
                 + ` <span class='sr-only' x-text='question.options[question.answerIndex]'></span>`
             "
-            class="my-4"
+            class="my-4 border rounded px-4 py-2"
+            x-bind:class="
+              response === question.answerIndex
+                ? 'border-green-300 bg-green-100 text-green-700'
+                : 'border-red-300 bg-red-100 text-red-700'
+            "
           ></div>
         </template>
 
@@ -109,8 +114,11 @@
     </template>
 
     <template x-if="!question">
-      <p x-text="`All done! You got ${correctResponseCount} out of ${questions.length} terms correct.`"></p>
-      <a href="" class="Button Button--secondary mt-6">Play again</a>
+      <div>
+        <p class="text-lg font-medium">All done!</p>
+        <p x-html="`You got <b>${correctResponseCount}</b> of <b>${questions.length}</b> terms correct.`"></p>
+        <a href="" class="Button Button--secondary mt-6">Play again</a>
+      </div>
     </template>
   </div>
 </x-layout>
