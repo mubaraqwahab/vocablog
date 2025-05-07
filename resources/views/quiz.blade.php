@@ -21,9 +21,11 @@
         return this.responses.filter((r, i) => r === this.questions[i].answerIndex).length;
       },
     }"
+    x-ref="questionContainer"
+    tabindex="-1"
   >
     <template x-if="question">
-      <form x-ref="questionForm" tabindex="-1">
+      <form>
         <p class="mb-5">
           <span class="block mb-1 text-sm text-gray-500" x-text="`Question ${currentIndex + 1} of ${questions.length}`"></span>
           <span class="block font-medium text-lg" x-html="`What does <b>${question.term}</b> mean in ${question.lang}?`"></span>
@@ -104,7 +106,7 @@
               tempResponse = '';
               currentIndex++;
               $nextTick(() => {
-                $refs.questionForm.focus();
+                $refs.questionContainer.focus();
               });
             }"
             x-cloak
