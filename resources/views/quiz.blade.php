@@ -23,7 +23,7 @@
     }"
   >
     <template x-if="question">
-      <form>
+      <form x-ref="questionForm" tabindex="-1">
         <p class="mb-5">
           <span class="block mb-1 text-sm text-gray-500" x-text="`Question ${currentIndex + 1} of ${questions.length}`"></span>
           <span class="block font-medium text-lg" x-html="`What does <b>${question.term}</b> mean in ${question.lang}?`"></span>
@@ -103,6 +103,9 @@
             @click="() => {
               tempResponse = '';
               currentIndex++;
+              $nextTick(() => {
+                $refs.questionForm.focus();
+              });
             }"
             x-cloak
             x-show="response !== null"
