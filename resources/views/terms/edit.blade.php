@@ -2,9 +2,9 @@
   <h1 class="PageHeading">Edit term</h1>
 
   @if ($errors->any())
-    <div class="mb-5 border border-red-300 bg-red-100 text-red-700 rounded px-4 py-2">
-      <p class="font-medium">{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
-    </div>
+    <x-banner variant="danger">
+      <p>{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
+    </x-banner>
   @endif
 
   <x-form method="PUT" action="{{ rroute('terms.update', ['term' => $term]) }}" class="flex flex-col gap-y-5">

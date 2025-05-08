@@ -32,7 +32,13 @@
         </p>
 
         <template x-if="hasError">
-          <div tabindex="-1" x-ref="errorFeedback" class="my-4">You need to choose an option.</div>
+          <div
+            tabindex="-1"
+            x-ref="errorFeedback"
+            class="my-4 border rounded px-4 py-2 border-red-300 bg-red-100 text-red-700"
+          >
+            You need to choose an option.
+          </div>
         </template>
 
         <div class="space-y-3">
@@ -57,24 +63,24 @@
           </template>
         </div>
 
-        <template x-if="response !== null">
-          <div
-            tabindex="-1"
-            x-ref="responseFeedback"
-            x-html="
-              response === question.answerIndex
-                ? 'Correct!'
-                : `Nah! The correct answer is <b>${letter(question.answerIndex)}</b>.`
-                + ` <span class='sr-only' x-text='question.options[question.answerIndex]'></span>`
-            "
-            class="my-4 border rounded px-4 py-2"
-            x-bind:class="
-              response === question.answerIndex
-                ? 'border-green-300 bg-green-100 text-green-700'
-                : 'border-red-300 bg-red-100 text-red-700'
-            "
-          ></div>
-        </template>
+        <div tabindex="-1" x-ref="responseFeedback" class="my-4" x-show="response !== null">
+          <template x-if="response === question.answerIndex">
+            <x-banner variant="success">
+              <p>Correct!</p>
+            </x-banner>
+          </template>
+
+          <template x-if="response !== question.answerIndex">
+            <x-banner variant="danger">
+              <p
+                x-html="(
+                  `Nah! The correct answer is <b>${letter(question.answerIndex)}</b>.`
+                  + ` <span class='sr-only' x-text='question.options[question.answerIndex]'></span>`
+                )"
+              ></p>
+            </x-banner>
+          </template>
+        </div>
 
         <div class="mt-6">
           <button

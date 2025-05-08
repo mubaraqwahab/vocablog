@@ -50,7 +50,6 @@ class QuizController extends Controller
                 "term" => $term->name,
                 "lang" => $term->lang->name,
                 "options" => $options,
-                "answer" => $answer,
                 "answerIndex" => array_search($answer, $options),
             ];
         });

@@ -8,7 +8,8 @@
   </head>
   <body class="text-gray-700 bg-white">
     <nav class="border-b bg-gray-50">
-      <div class="flex justify-between items-center container py-3 max-w-prose">
+      <div class="flex justify-between items-center container py-3 max-w-prose relative">
+        <a href="#main" class="[&:not(:focus)]:sr-only absolute bg-white border px-2 py-1 rounded inline-block">Skip to main content</a>
         <a href="/" class="font-bold">{{ config('app.name') }}</a>
         @auth
           <details class="relative group">
@@ -38,8 +39,8 @@
         @endauth
       </div>
     </nav>
-    <div class="container py-8 sm:py-10 max-w-prose">
+    <main class="container py-8 sm:py-10 max-w-prose" id="main">
       {{ $slot }}
-    </div>
+    </main>
   </body>
 </html>
