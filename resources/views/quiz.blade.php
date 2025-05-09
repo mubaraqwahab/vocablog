@@ -64,14 +64,14 @@
             </template>
           </div>
 
-          <div tabindex="-1" x-ref="responseFeedback" class="my-4" x-show="response !== null">
+          <div tabindex="-1" x-ref="responseFeedback" class="my-4 min-h-11">
             <template x-if="response === question.answerIndex">
               <x-banner variant="success">
                 <p>Correct!</p>
               </x-banner>
             </template>
 
-            <template x-if="response !== question.answerIndex">
+            <template x-if="response !== null && response !== question.answerIndex">
               <x-banner variant="danger">
                 <p
                   x-html="(
@@ -83,45 +83,43 @@
             </template>
           </div>
 
-          <div class="mt-6">
-            <button
-              type="submit"
-              class="Button Button--primary"
-              @click.prevent="() => {
-                if ($el.form.checkValidity()) {
-                  hasError = false;
-                  responses[currentIndex] = tempResponse;
-                  $nextTick(() => {
-                    $refs.responseFeedback.focus();
-                  });
-                } else {
-                  hasError = true;
-                  $nextTick(() => {
-                    $refs.errorFeedback.focus();
-                  });
-                }
-              }"
-              x-show="response === null"
-            >
-              Submit
-            </button>
-
-            <button
-              type="button"
-              class="Button Button--primary"
-              @click="() => {
-                tempResponse = '';
-                currentIndex++;
+          <button
+            type="submit"
+            class="Button Button--primary"
+            @click.prevent="() => {
+              if ($el.form.checkValidity()) {
+                hasError = false;
+                responses[currentIndex] = tempResponse;
                 $nextTick(() => {
-                  $refs.questionContainer.focus();
+                  $refs.responseFeedback.focus();
                 });
-              }"
-              x-cloak
-              x-show="response !== null"
-            >
-              Next
-            </button>
-          </div>
+              } else {
+                hasError = true;
+                $nextTick(() => {
+                  $refs.errorFeedback.focus();
+                });
+              }
+            }"
+            x-show="response === null"
+          >
+            Submit
+          </button>
+
+          <button
+            type="button"
+            class="Button Button--primary"
+            @click="() => {
+              tempResponse = '';
+              currentIndex++;
+              $nextTick(() => {
+                $refs.questionContainer.focus();
+              });
+            }"
+            x-cloak
+            x-show="response !== null"
+          >
+            Next
+          </button>
         </form>
       </template>
 
