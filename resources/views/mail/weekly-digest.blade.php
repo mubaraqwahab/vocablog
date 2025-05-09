@@ -25,4 +25,8 @@ You learnt these new terms in the past week:
 </x-mail::panel>
 @endforeach
 
+@if ($user->all_terms_count >= config('app.min_terms_count_for_quiz'))
+Want to test your knowledge so far? [Take a quiz!]({{ route('quiz') }})
+@endif
+
 </x-mail::message>

@@ -7,6 +7,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TermController;
 use App\Mail\LoginLink;
 use App\Mail\WeeklyDigest;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware("guest")->group(function () {
@@ -64,7 +65,10 @@ Route::prefix("dev")->group(function () {
             abort(404);
         }
 
-        $mailable = new WeeklyDigest(request()->user());
+        $user = request()->user();
+        $user->loadCount("terms as all_terms_count");
+
+        $mailable = new WeeklyDigest($user);
         $mailable->to("test@example.com");
 
         return $mailable;

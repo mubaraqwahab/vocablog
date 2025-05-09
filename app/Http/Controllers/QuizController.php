@@ -4,14 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Definition;
 use App\Models\Term;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class QuizController extends Controller
 {
-    public function edit()
+    public function edit(Request $request)
     {
+        // Ideally, these queries should probably run in a transaction?
+
+        $termsCount = Term::query()
+            ->where("terms.owner_id", $request->user()->id)
+            ->count();
+
+        if ($termsCount < config("app.min_terms_count_for_quiz")) {
+            return view("quiz", ["questions" => [], "termsCount" => $termsCount]);
+        }
+
         $terms = Term::query()
+            ->where("terms.owner_id", $request->user()->id)
             ->with([
                 "definitions" => fn($query) => $query->inRandomOrder()->limit(1),
             ])

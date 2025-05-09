@@ -10,13 +10,13 @@
   </div>
 
   @if (session('status') === 'term-deleted')
-    <x-banner variant="success" dismissable>
+    <x-banner variant="success" dismissable class="mb-5">
       <p>Term deleted</p>
     </x-banner>
   @endif
 
   @if ($allTermsCount > 0)
-    <x-form class="flex items-center flex-wrap gap-4 mb-6 pb-6">
+    <x-form class="flex items-center flex-wrap gap-4 mb-5 pb-6">
       <div class="FormGroup FormGroup--horizontal items-center flex-grow">
         <label class="Label Label-text text-sm" for="term">Term</label>
         <input name="term" id="term" class="FormControl text-sm w-full bg-gray-50/80" value="{{ request()->query('term') }}" />
@@ -36,10 +36,13 @@
       <button type="submit" class="Button Button--secondary">Search</button>
     </x-form>
 
-
     @if ($terms->count() > 0)
-      <p class="text-sm text-gray-500 mb-4">
-        Showing {{ $terms->firstItem() }} to {{ $terms->lastItem() }} of {{ $terms->total() }} terms
+      <p class="flex flex-col gap-y-1 sm:block text-sm text-gray-500 mb-4">
+        <span>Showing {{ $terms->firstItem() }} to {{ $terms->lastItem() }} of {{ $terms->total() }} terms</span>
+        @if ($terms->total() >= config('app.min_terms_count_for_quiz'))
+          <span class="hidden sm:inline">&middot;</span>
+          <a href="{{ rroute('quiz') }}" class="underline">Want to test your knowledge?</a>
+        @endif
       </p>
 
       <ul class="flex flex-col gap-4 mb-6">

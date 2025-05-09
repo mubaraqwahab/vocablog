@@ -22,6 +22,7 @@ Artisan::command("app:send-digest", function () {
 
     $users = User::query()
         ->where("weekly_digest_enabled", true)
+        ->withCount("terms as all_terms_count")
         ->withWhereHas("terms", $termsLoader)
         ->orderBy("id", "asc")
         ->paginate(10);
