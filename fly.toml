@@ -17,6 +17,7 @@ console_command = 'php /var/www/html/artisan tinker'
 
 [env]
   APP_NAME = 'Vocablog'
+  APP_TAGLINE = 'A simple app to keep track of new words you learn.'
   APP_ENV = 'production'
   APP_URL = 'https://vocablog.mubaraqwahab.com'
   ASSET_URL = 'https://vocablog.mubaraqwahab.com'

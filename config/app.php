@@ -118,5 +118,7 @@ return [
         "store" => env("APP_MAINTENANCE_STORE", "database"),
     ],
 
+    "tagline" => env("APP_TAGLINE", ""),
+
     "min_terms_count_for_quiz" => 15,
 ];

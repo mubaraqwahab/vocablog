@@ -12,7 +12,10 @@ Artisan::command("inspire", function () {
 })->purpose("Display an inspiring quote");
 
 Artisan::command("app:send-digest", function () {
+    // TODO: Pick N random terms, giving priority to those learnt in the past week.
+    // TODO: Refactor this code, so it's easy to reuse with the /dev/weekly-digest route.
     $termsLoader = function ($query) {
+        // TODO: You might need to limit this some day.
         $query
             ->withWhereHas("definitions", function ($query) {
                 $query->whereBetween("created_at", [now()->addWeeks(-1), now()]);
