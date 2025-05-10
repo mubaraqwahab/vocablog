@@ -6,7 +6,7 @@
       x-data="{
         questions: {{ Js::from($questions) }},
         responses: {{ Js::from(array_fill(0, count($questions), null)) }},
-        currentIndex: 0,
+        currentIndex: -1,
         tempResponse: '',
         hasError: false,
         get question() {
@@ -25,7 +25,25 @@
       x-ref="questionContainer"
       tabindex="-1"
     >
-      <template x-if="question">
+      <div x-show="currentIndex === -1">
+        <p class="text-lg">
+          We'll show you {{ count($questions) }} random terms you've learnt, and for each you're to choose the right definition.
+        </p>
+        <button
+          type="button"
+          class="Button Button--primary mt-6"
+          @click="() => {
+            currentIndex++;
+            $nextTick(() => {
+              $refs.questionContainer.focus();
+            });
+          }"
+        >
+          Start now
+        </button>
+      </div>
+
+      <template x-if="currentIndex >= 0 && currentIndex < questions.length">
         <form>
           <p class="mb-5">
             <span class="block mb-1 text-sm text-gray-500" x-text="`Question ${currentIndex + 1} of ${questions.length}`"></span>
@@ -117,17 +135,19 @@
             }"
             x-cloak
             x-show="response !== null"
+            x-text="currentIndex === questions.length - 1 ? 'Finish' : 'Next'"
           >
             Next
           </button>
         </form>
       </template>
 
-      <template x-if="!question">
+      <template x-if="currentIndex === questions.length">
         <div>
           <p class="text-lg font-medium">All done!</p>
           <p x-html="`You got <b>${correctResponseCount}</b> of <b>${questions.length}</b> terms correct.`"></p>
-          <a href="" class="Button Button--secondary mt-6">Play again</a>
+          <a href="{{ rroute('quiz') }}" class="Button Button--secondary mt-6">Play again</a>
+          <a href="{{ rroute('terms.index') }}" class="Button Button--secondary mt-6">Return to your terms</a>
         </div>
       </template>
     </div>
@@ -136,7 +156,7 @@
     $minTermsCount = config('app.min_terms_count_for_quiz');
     $remainingCount = $minTermsCount - $termsCount;
     @endphp
-    <div class="space-y-2">
+    <div class="space-y-1">
       <p>You can't take a quiz until you have up to {{ $minTermsCount }} terms in your {{ config('app.name') }}.</p>
       <p>You currently have only {{ $termsCount }}.</p>
       <p>Learn {{ $remainingCount }} more {{ Str::plural('term', $remainingCount) }}, and a quiz will be ready :)</p>

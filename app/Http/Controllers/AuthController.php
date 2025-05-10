@@ -22,6 +22,7 @@ class AuthController extends Controller
         $email = $validated["email"];
         $intended = omit_origin(redirect()->intended()->getTargetUrl());
 
+        // NOTE: The URL can be reused multiple times until it expires. Is that bad?
         $signedUrl = URL::temporarySignedRoute(
             "verify",
             expiration: now()->addMinutes(30),
