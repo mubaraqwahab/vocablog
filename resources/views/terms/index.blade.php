@@ -1,7 +1,6 @@
 <x-layout title="My vocabulary">
   <div class="flex items-center justify-between mb-5">
     <h1 class="PageHeading mb-0">My vocabulary</h1>
-    <!-- TODO: Add a quiz btn somewhere -->
     @if ($allTermsCount > 0)
       <div class="flex items-center">
         <a href="{{ rroute('terms.create') }}" class="Button Button--primary">Add term</a>
@@ -65,10 +64,16 @@
 
       {{ $terms->links('partials.pagination') }}
     @else
-      <p class="mb-3 mt-4">You don't have any terms matching your search.</p>
+      <div class="flex flex-col justify-center items-center">
+        <img src="/undraw_file-search_cbur.svg" alt="" class="aspect-auto w-48 mt-10 mb-12 opacity-70" />
+        <p class="text-gray-500">No terms match your search.</p>
+      </div>
     @endif
   @else
-    <p class="mb-3">You don't have any terms in your {{ config('app.name') }}.</p>
-    <a href="{{ rroute('terms.create') }}" class="Button Button--primary">Add a new term</a>
+    <div class="flex flex-col justify-center items-center">
+      <img src="/undraw_no-data_ig65.svg" alt="Welcome" class="aspect-auto w-40 mt-10 mb-12 opacity-70" />
+      <p class="mb-4 text-gray-500">Your {{ config('app.name') }} is empty.</p>
+      <a href="{{ rroute('terms.create') }}" class="Button Button--primary">Add your first term</a>
+    </div>
   @endif
 </x-layout>
