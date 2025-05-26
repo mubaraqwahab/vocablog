@@ -42,6 +42,7 @@ class QuizController extends Controller
                 Definition::query()
                     ->whereColumn("definitions.term_id", "<>", "ref_terms.id")
                     ->whereColumn("definitions.text", "<>", "ref_terms.definition")
+                    ->whereRelation("term", "terms.owner_id", $request->user()->id)
                     ->select(["definitions.text", DB::raw("random() as _order")])
                     ->distinct()
                     ->orderBy("_order")
