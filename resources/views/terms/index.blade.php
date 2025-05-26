@@ -12,6 +12,10 @@
     <x-banner variant="success" dismissable class="mb-5">
       <p>Term deleted</p>
     </x-banner>
+  @elseif (session('status') === 'term-added' && ($allTermsCount === 10 || $allTermsCount === 100))
+    <x-banner variant="success" dismissable class="mb-5" id="term-added-banner" :data-all-terms-count="$allTermsCount">
+      <p>Nice work! You've learnt {{ $allTermsCount }} terms so far.</p>
+    </x-banner>
   @endif
 
   @if ($allTermsCount > 0)

@@ -121,7 +121,7 @@ class TermController extends Controller
             );
         });
 
-        return redirect(route("terms.index"));
+        return redirect(route("terms.index"))->with("status", "term-added");
     }
 
     public function show(Term $term)

@@ -16,3 +16,16 @@ createIcons({
 
 window.Alpine = Alpine;
 Alpine.start();
+
+const termAddedBanner = document.getElementById("term-added-banner");
+if (termAddedBanner) {
+  const { default: confetti } = await import("canvas-confetti");
+
+  const allTermsCount = +termAddedBanner.dataset.allTermsCount;
+
+  await confetti({
+    disableForReducedMotion: true,
+    particleCount: allTermsCount === 10 ? 50 : 200,
+    spread: allTermsCount === 10 ? 45 : 60,
+  });
+}
