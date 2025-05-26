@@ -19,13 +19,17 @@ Alpine.start();
 
 const termAddedBanner = document.getElementById("term-added-banner");
 if (termAddedBanner) {
-  const { default: confetti } = await import("canvas-confetti");
+  import("canvas-confetti")
+    .then(({ default: confetti }) => {
+      const allTermsCount = +termAddedBanner.dataset.allTermsCount;
 
-  const allTermsCount = +termAddedBanner.dataset.allTermsCount;
-
-  await confetti({
-    disableForReducedMotion: true,
-    particleCount: allTermsCount === 10 ? 50 : 200,
-    spread: allTermsCount === 10 ? 45 : 60,
-  });
+      return confetti({
+        disableForReducedMotion: true,
+        particleCount: allTermsCount === 10 ? 50 : 200,
+        spread: allTermsCount === 10 ? 45 : 60,
+      });
+    })
+    .catch(() => {
+      // noop
+    });
 }
