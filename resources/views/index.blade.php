@@ -2,7 +2,7 @@
   <h1 class="font-extrabold mb-5 text-gray-900 text-4xl">{{ config('app.name') }}</h1>
   <p class="text-xl mb-6">{{ config('app.tagline') }}</p>
 
-  <x-form method="POST" action="{{ rroute('login') }}" class="mt-9 mb-12">
+  <x-form method="POST" action="{{ rroute('login') }}" class="mb-14">
     <div class="FormGroup mb-5">
       <label for="email" class="Label Label-text">Enter your email to get started</label>
       <input type="email" name="email" id="email" required class="FormControl" />
@@ -17,9 +17,9 @@
     <li>take quizzes to test your knowledge.</li>
   </ul>
 
-  <img src="/vocablog-screenshot.webp" alt="A screenshot of Vocablog" class="mt-10 border rounded-md" />
+  <img src="/vocablog-screenshot.webp" alt="A screenshot of Vocablog" class="mt-10 border rounded-md shadow" />
 
-  <p class="mt-16 mb-12 text-sm">
+  <p class="mt-16 text-sm text-gray-500">
     Built by <a href="https://mubaraqwahab.com" class="underline">Mubaraq Wahab</a> &middot;
     <a href="https://github.com/mubaraqwahab/vocablog" class="underline">Source code</a>
   </p>
