@@ -6,7 +6,7 @@
       <p>{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
     </x-banner>
 
-    <pre class="mb-2"><code id="errorObj">{{ $errors }}</code></pre>
+    <pre class="mb-2 whitespace-pre-wrap"><code id="errorObj">{{ $errors }}</code></pre>
     <button class="Button Button--secondary mb-4" onclick="(() => {
       const copied = document.getElementById('errorObj').textContent.trim();
       navigator.clipboard.writeText(copied).then(() => alert('Copied!')).catch(() => alert('Failed to copy'));
