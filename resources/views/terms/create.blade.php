@@ -5,6 +5,12 @@
     <x-banner variant="danger" class="mb-5">
       <p>{{ $errors->count() }} {{ Str::plural('error', $errors->count()) }} occurred.</p>
     </x-banner>
+
+    <pre class="mb-2"><code id="errorObj">{{ $errors }}</code></pre>
+    <button class="Button Button--secondary mb-4" onclick="(() => {
+      const copied = document.getElementById('errorObj').textContent.trim();
+      navigator.clipboard.writeText(copied).then(() => alert('Copied!')).catch(() => alert('Failed to copy'));
+    })();">Copy error</button>
   @endif
 
   <x-form method="POST" action="{{ rroute('terms.store') }}" class="flex flex-col gap-y-5">
