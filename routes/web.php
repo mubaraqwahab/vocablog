@@ -73,4 +73,8 @@ Route::prefix("dev")->group(function () {
 
         return $mailable;
     });
+
+    Route::get("/phpinfo", function () {
+        return phpinfo();
+    });
 });

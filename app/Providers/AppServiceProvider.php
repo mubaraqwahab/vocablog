@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Codewithkyrian\Transformers\Transformers;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Transformers::setup()->setCacheDir(storage_path("app/transformers"))->apply();
     }
 }

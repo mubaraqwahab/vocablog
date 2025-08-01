@@ -12,6 +12,7 @@ LABEL fly_launch_runtime="laravel"
 
 # copy application code, skipping files based on .dockerignore
 COPY . /var/www/html
+COPY docker/php.ini /usr/local/etc/php/conf.d/99-custom.ini
 
 RUN composer install --optimize-autoloader --no-dev \
     && mkdir -p storage/logs \
