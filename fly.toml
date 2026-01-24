@@ -1,7 +1,6 @@
 # fly.toml app configuration file generated for vocablog on 2024-05-07T07:58:36+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
 
 app = 'vocablog'
 primary_region = 'jnb'
