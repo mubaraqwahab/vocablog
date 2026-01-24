@@ -40,7 +40,9 @@ console_command = 'php /var/www/html/artisan tinker'
   app = ''
   cron = 'cron -f'
 
-[mounts]
+[[mounts]]
+  destination = "/var/www/html/storage/app"
+  source = "disk"
 
 [[vm]]
   memory = '256mb'
