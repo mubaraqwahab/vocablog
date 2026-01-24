@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  @view-transition {
+    navigation: auto;
+  }
+
   :focus-visible {
     @apply !outline-black !outline-2 !outline-offset-0 outline;
   }
